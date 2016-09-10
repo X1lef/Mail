@@ -2,18 +2,19 @@ package mail.mensaje.vista;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.Image;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JToolBar;
 import javax.swing.JToolBar.Separator;
 import javax.swing.JTree;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
@@ -21,16 +22,17 @@ import javax.swing.tree.DefaultTreeModel;
  * Ventana de inicio del programa, en la que solo contendra la vista.
  */
 public class VentanaPrincipal extends JFrame {
-    private JTree jtArbol;
-    private JScrollPane jspMenPane;
+    private JTree jTree;
+    private JTable jtMensajes;
+    private JScrollPane jspMenPane, jspTablaMensaje;
+    private JLabel jlConexion;
     private JMenuBar menuBar;
     private JMenu jmArchivo, jmMensajes, jmIr, jmHerramientas;
+    private Separator sp1, sp2;
     private JButton jbInicio, jbRedactar, jbIngresarContacto,
             jbIngresarEmpresa, jbIrContactos;
-    private JPanel jpNorth;
-    private Separator sp1, sp2;
+    private JPanel jpNorth, jpSouth;
     private JToolBar toolBar;
-    
     
     public VentanaPrincipal () {
         crearUI ();
@@ -104,48 +106,76 @@ public class VentanaPrincipal extends JFrame {
         toolBar.add(jbIrContactos);
         toolBar.add(jbIngresarEmpresa);
         
+        //Inicializando el label.
+        //TODO : Valor por defecto que lo agrego para ver como queda.
+        jlConexion = new JLabel("Internet deshabilitado");
+        jlConexion.setIcon(
+                new ImageIcon(getClass().getResource("/Iconos/disconnect.png"))
+        );
         
         //Inicializo el panel y le agrego el toolbar.
         jpNorth = new JPanel(new FlowLayout(FlowLayout.LEFT));
         jpNorth.add(toolBar);
         
-//        DefaultMutableTreeNode treeNodeMain = new DefaultMutableTreeNode("root");
-//        DefaultMutableTreeNode treeNode2 = new DefaultMutableTreeNode("Mensajes");
-//        
-//        DefaultMutableTreeNode treeNode3 = new DefaultMutableTreeNode("Recididos");
-//        treeNode2.add(treeNode3);
-//        treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Enviados");
-//        treeNode2.add(treeNode3);
-//        treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Eliminados");
-//        treeNode2.add(treeNode3);
-//        treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Guardados");
-//        treeNode2.add(treeNode3);
-//        treeNodeMain.add(treeNode2);
-//        
-//        treeNode2 = new javax.swing.tree.DefaultMutableTreeNode("Contactos");
-//        treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("basketball");
-//        treeNode2.add(treeNode3);
-//        treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("soccer");
-//        treeNode2.add(treeNode3);
-//        treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("football");
-//        treeNode2.add(treeNode3);
-//        treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("hockey");
-//        treeNode2.add(treeNode3);
-//        treeNodeMain.add(treeNode2);
-//        
-//        jtArbol.setModel(new DefaultTreeModel(treeNodeMain));
-//        jtArbol.setRootVisible(false);
-//        jtArbol.setToggleClickCount(1);
-//        jspMenPane.setViewportView(jtArbol);
+        jpSouth = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        jpSouth.add(jlConexion);
+        
+        jtMensajes = new JTable ();
+        jtMensajes.setModel(new DefaultTableModel(
+            new Object [][] {
+                {"leticiafie1954@gmail.com", "Publicidad de Avón", "11/02/16 10:30hs"}
+            }, 
+            new String [] {
+                "Para", "Asunto", "Fecha"
+            }
+        ));
+        
+        jspTablaMensaje = new JScrollPane ();
+        jspTablaMensaje.setViewportView(jtMensajes);
+        
+        DefaultMutableTreeNode treeNodeMain = new DefaultMutableTreeNode("root");
+        DefaultMutableTreeNode treeNode1 = new DefaultMutableTreeNode("Mensajes largo tempralmente");
+        
+        DefaultMutableTreeNode treeNode2 = new DefaultMutableTreeNode("Recididos");
+        treeNode1.add(treeNode2);
+        treeNode2 = new DefaultMutableTreeNode("Enviados");
+        treeNode1.add(treeNode2);
+        treeNode2 = new DefaultMutableTreeNode("Eliminados");
+        treeNode1.add(treeNode2);
+        treeNode2 = new DefaultMutableTreeNode("Guardados");
+        treeNode1.add(treeNode2);
+        treeNodeMain.add(treeNode1);
+        
+        treeNode1 = new DefaultMutableTreeNode("Contactos");
+        treeNode2 = new DefaultMutableTreeNode("basketball");
+        treeNode1.add(treeNode2);
+        treeNode2 = new DefaultMutableTreeNode("soccer");
+        treeNode1.add(treeNode2);
+        treeNode2 = new DefaultMutableTreeNode("football");
+        treeNode1.add(treeNode2);
+        treeNode2 = new DefaultMutableTreeNode("hockey");
+        treeNode1.add(treeNode2);
+        treeNodeMain.add(treeNode1);
+        
+        //Inicializamos el componente JTree y le agregamoslos nodos.
+        jTree = new JTree();
+        jTree.setModel(new DefaultTreeModel(treeNodeMain));
+        jTree.setRootVisible(false);
+        jTree.setToggleClickCount(1);
+        
+        jspMenPane = new JScrollPane();
+        jspMenPane.setViewportView(jTree);
         
         //Añadiendo el menuBar al JFrame.
         setJMenuBar(menuBar);
         
         //Añadimos al JFrame los componentes.
-//        add (BorderLayout.SOUTH, jspMenPane);
         add (BorderLayout.NORTH, jpNorth);
+        add (BorderLayout.SOUTH, jpSouth);
+        add (BorderLayout.CENTER, jspTablaMensaje);
+        add (BorderLayout.WEST, jspMenPane);
         
-        setSize(500, 500);
+        pack();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 }
