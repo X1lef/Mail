@@ -2,6 +2,8 @@ package mail.mensaje.vista;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -14,6 +16,8 @@ import javax.swing.JTable;
 import javax.swing.JToolBar;
 import javax.swing.JToolBar.Separator;
 import javax.swing.JTree;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -30,7 +34,8 @@ public class VentanaPrincipal extends JFrame {
     private JMenu jmArchivo, jmMensajes, jmIr, jmHerramientas;
     private Separator sp1, sp2;
     private JButton jbInicio, jbRedactar, jbIngresarContacto,
-            jbIngresarEmpresa, jbIrContactos;
+            jbIngresarEmpresa, jbIrContactos, jbEliminarMensaje, jbResponder, 
+            jbResponderTodos, jbReenviarMensaje, jbEditarMensaje;
     private JPanel jpNorth, jpSouth;
     private JToolBar toolBar;
     
@@ -63,6 +68,22 @@ public class VentanaPrincipal extends JFrame {
         );
         jbInicio.setFocusable(false);
         jbInicio.setToolTipText("Inicio (Ctrl+I)");
+        //TODO : Esto debo ver para ponerlo en otra clase.
+        jbInicio.addActionListener((ActionEvent e) -> {
+            //TODO : Esto debo mejorar la eficiencia ya que esto es solo cuando cliquee en recididos.
+            if (e.getSource().equals(jbInicio)) {
+            //Botones que se deben ocultar.
+            jbEliminarMensaje.setVisible(false);
+            jbReenviarMensaje.setVisible(false);
+            jbEditarMensaje.setVisible(false);
+            
+            //Botones que se deben ocultar.
+            jbIngresarContacto.setVisible(true);
+            jbIrContactos.setVisible(true);
+            jbIngresarEmpresa.setVisible(true);
+            sp2.setVisible(true);
+            }
+        });
         
         jbRedactar = new JButton();
         jbRedactar.setIcon(
@@ -93,6 +114,47 @@ public class VentanaPrincipal extends JFrame {
         jbIrContactos.setFocusable(false);
         jbIrContactos.setToolTipText("Ir a contactos (Ctrl+A)");
         
+        //Botones que apareceran cuando se cliquee sobre Enviados.
+        jbEliminarMensaje = new JButton();
+        jbEliminarMensaje.setIcon(
+                new ImageIcon(getClass().getResource("/Iconos/email_eliminar.png"))
+        );
+        jbEliminarMensaje.setFocusable(false);
+        jbEliminarMensaje.setVisible(false);
+        jbEliminarMensaje.setToolTipText("Eliminar mensaje");
+        
+        jbResponder = new JButton();
+        jbResponder.setIcon(
+                new ImageIcon(getClass().getResource("/Iconos/responder_mensaje.png"))
+        );
+        jbResponder.setFocusable(false);
+        jbResponder.setVisible(false);
+        jbResponder.setToolTipText("Responder mensaje");
+        
+        jbResponderTodos = new JButton();
+        jbResponder.setIcon(
+                new ImageIcon(getClass().getResource("/Iconos/responder_mensaje.png"))
+        );
+        jbResponderTodos.setFocusable(false);
+        jbResponderTodos.setVisible(false);
+        jbResponderTodos.setToolTipText("Responder a todos");
+        
+        jbReenviarMensaje = new JButton();
+        jbReenviarMensaje.setIcon(
+                new ImageIcon(getClass().getResource("/Iconos/responder_mensaje.png"))
+        );
+        jbReenviarMensaje.setFocusable(false);
+        jbReenviarMensaje.setVisible(false);
+        jbReenviarMensaje.setToolTipText("Reenviar mensaje");
+        
+        jbEditarMensaje = new JButton();
+        jbEditarMensaje.setIcon(
+                new ImageIcon(getClass().getResource("/Iconos/responder_mensaje.png"))
+        );
+        jbEditarMensaje.setFocusable(false);
+        jbEditarMensaje.setVisible(false);
+        jbEditarMensaje.setToolTipText("Editar mensaje");
+        
         sp1 = new JToolBar.Separator();
         sp2 = new JToolBar.Separator();
         
@@ -101,6 +163,13 @@ public class VentanaPrincipal extends JFrame {
         toolBar.add(jbInicio);
         toolBar.add(sp1);
         toolBar.add(jbRedactar);
+        
+        toolBar.add(jbResponder);
+        toolBar.add(jbResponderTodos);
+        toolBar.add(jbEditarMensaje);
+        toolBar.add(jbEliminarMensaje);
+        toolBar.add(jbReenviarMensaje);
+        
         toolBar.add(sp2);
         toolBar.add(jbIngresarContacto);
         toolBar.add(jbIrContactos);
@@ -163,6 +232,34 @@ public class VentanaPrincipal extends JFrame {
         jTree.setRootVisible(false);
         jTree.setToggleClickCount(1);
         
+        //Controla los eventos.
+        //TODO : Debo ver como este agrego a la otra clase.
+        jTree.addTreeSelectionListener((TreeSelectionEvent e) -> {
+            DefaultMutableTreeNode nodoSeleccionado = (DefaultMutableTreeNode) jTree.getLastSelectedPathComponent();
+            
+            switch(nodoSeleccionado.getUserObject().toString()) {
+                case "Enviados" :
+                    //Botones que se deben mostrar.
+                    jTree.setFocusCycleRoot(false);
+                    jbEliminarMensaje.setVisible(true);
+                    jbReenviarMensaje.setVisible(true);
+                    jbEditarMensaje.setVisible(true);
+                    
+                    //Botones que se deben ocultar.
+                    jbIngresarContacto.setVisible(false);
+                    jbIrContactos.setVisible(false);
+                    jbIngresarEmpresa.setVisible(false);
+                    sp2.setVisible(false);
+                    break;
+                case "Recibidos" :
+                    break;
+                case "Eliminados" :
+                    break;
+                case "Guardados" :
+                    break;
+            }
+        });
+        
         jspMenPane = new JScrollPane();
         jspMenPane.setViewportView(jTree);
         
@@ -176,6 +273,7 @@ public class VentanaPrincipal extends JFrame {
         add (BorderLayout.WEST, jspMenPane);
         
         pack();
+        setTitle("Mail");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 }
