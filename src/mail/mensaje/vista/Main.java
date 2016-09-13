@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.UIManager;
+import mail.mensaje.controlador.MailControlador;
 
 /**
  * @author Félix Pedrozo
@@ -22,12 +23,12 @@ public class Main {
                 }
             }
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
-            Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MailPrincipalVista.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        //Crea una instancia de la clase VentanaPricipal.
+        //Crea una instancia de la clase MailControlador.
         SwingUtilities.invokeLater(() -> {
-            new VentanaPrincipal().setVisible(true);
+            new MailControlador();
         });
     }
 }
