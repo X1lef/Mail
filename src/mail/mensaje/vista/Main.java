@@ -28,7 +28,7 @@ public class Main {
         
         //Crea una instancia de la clase MailControlador.
         SwingUtilities.invokeLater(() -> {
-            new MailControlador();
+            new MailControlador ();
         });
     }
 }

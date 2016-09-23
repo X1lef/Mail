@@ -5,6 +5,8 @@
         <group>
             <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Mail/src/mail/mensaje/vista/MailPrincipalVista.java</file>
             <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Mail/src/mail/mensaje/vista/RedactarMensajeVista.java</file>
+            <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Mail/src/mail/mensaje/vista/HistorialDeEnvio.java</file>
+            <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Mail/src/mail/mensaje/vista/ProgramarEnvioVista.java</file>
             <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/Mail/src/mail/mensaje/vista/Main.java</file>
         </group>
     </open-files>
