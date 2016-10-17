@@ -7,6 +7,8 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import mail.mensaje.vista.MailPrincipalVista;
+import mail.mensaje.vista.OperacionesDeContactoVista;
+import mail.mensaje.vista.RedactarMensajeVista;
 
 public class MailControlador implements TreeSelectionListener, ActionListener {
     private MailPrincipalVista vista;
@@ -38,10 +40,16 @@ public class MailControlador implements TreeSelectionListener, ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        
-        switch (((JButton) e.getSource()).getName()) {
+        switch (((JButton)e.getSource()).getName()) {
             case "jbInicio" :
                 vista.activarVisibilidad(true, false, false, false, false, false);
+                break;
+            case "jbRedactar" :
+                new RedactarMensajeVista(vista).setVisible(true);
+                break;
+            case "jbIngresarContacto" :
+                new OperacionesDeContactoVista(vista).setVisible(true);
+                break;
         }
     }
 }
