@@ -5,8 +5,8 @@ import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -27,7 +27,7 @@ import javax.swing.border.SoftBevelBorder;
  * @author Félix Pedrozo
  */
 public class RedactarMensajeVista extends JDialog {
-        private JTextArea jtaMensaje;
+    private JTextArea jtaMensaje;
     private JScrollPane jScrollPane;
     private JToolBar jtbRedactarMensaje, jtbPropiedadesMensaje;
     private JLabel jlDestinatario, jlRemitente, jlAsunto;
@@ -36,26 +36,20 @@ public class RedactarMensajeVista extends JDialog {
     private JMenu jmEditar, jmInsertar, jmArchivo;
     private JPanel jpBotones, jpPropiedadesMensaje, jpRedactarMensaje;
     private JButton jbEnviar, jbHistorialEnvio, jbCancelar, jbGuardar,
-            jbProgramarEnvio, jbContactosIr, jbNegrita, jbCursiva, jbAgregarImagen,
-            jbAgregarLink, jbSubrayado;
+        jbProgramarEnvio, jbContactosIr, jbNegrita, jbCursiva, jbAgregarImagen,
+        jbAgregarLink, jbSubrayado;
+    
     
     public RedactarMensajeVista (JFrame frame) {
-        super (frame);
-        inicializarComponentes ();
+        super(frame);
+        crearIU();
     }
     
-    private void inicializarComponentes () {
+    private void crearIU () {
         //Configración de las propiedades del Dialog.
         setTitle("Redactar mensaje");
         setModal(true);
-        //setLocationRelativeTo(null);
-        setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                System.exit (0);
-            }
-        });
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         
         //Configurando los componentes del jpRedactarMensaje.
         jpRedactarMensaje = new JPanel (new BorderLayout ());
@@ -65,27 +59,27 @@ public class RedactarMensajeVista extends JDialog {
         jbAgregarImagen = new JButton ();
         jbAgregarImagen.setToolTipText("Agregar imagen");
         jbAgregarImagen.setIcon(
-            new ImageIcon(getClass().getResource("/mail/mensaje/vista/iconos/imagen.png"))
+            new ImageIcon(getClass().getResource("iconos/imagen.png"))
         );
         jbAgregarLink = new JButton ();
         jbAgregarLink.setToolTipText("Agregar hipervínculo");
         jbAgregarLink.setIcon(
-            new ImageIcon(getClass().getResource("/mail/mensaje/vista/iconos/link.png"))
+            new ImageIcon(getClass().getResource("iconos/link.png"))
         );
         jbNegrita = new JButton ();
         jbNegrita.setToolTipText("Negrita");
         jbNegrita.setIcon(
-            new ImageIcon(getClass().getResource("/mail/mensaje/vista/iconos/negrita.png"))
+            new ImageIcon(getClass().getResource("iconos/negrita.png"))
         );
         jbCursiva = new JButton ();
         jbCursiva.setToolTipText("Cursiva");
         jbCursiva.setIcon(
-            new ImageIcon(getClass().getResource("/mail/mensaje/vista/iconos/cursiva.png"))
+            new ImageIcon(getClass().getResource("iconos/cursiva.png"))
         );
         jbSubrayado = new JButton ();
         jbSubrayado.setToolTipText("Subrayado");
         jbSubrayado.setIcon(
-            new ImageIcon(getClass().getResource("/mail/mensaje/vista/iconos/subrayado.png"))
+            new ImageIcon(getClass().getResource("iconos/subrayado.png"))
         );
         
         jtbRedactarMensaje.add (jbNegrita);
@@ -148,6 +142,7 @@ public class RedactarMensajeVista extends JDialog {
          constraints.fill = GridBagConstraints.HORIZONTAL;
          constraints.insets = new Insets(20, 0, 10, 10);
          
+         //TODO : Dato de prueba.
          jtfRemitente = new JTextField ("horacionfs@gmail.com");
          jtfRemitente.setEnabled(false);
          
@@ -210,11 +205,25 @@ public class RedactarMensajeVista extends JDialog {
         );
         jbProgramarEnvio.setToolTipText("Programar envío (Ctrl+E)");
         jbProgramarEnvio.setFocusable (false);
+        //TODO : Esto debe estar en en otra clase, siguiendo el Patrón mvc.
+        jbProgramarEnvio.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new ProgramarEnvioVista(RedactarMensajeVista.this).setVisible(true);
+            }
+        });
         jtbPropiedadesMensaje.add (jbProgramarEnvio);
         
         jpBotones = new JPanel (new FlowLayout (FlowLayout.RIGHT, 10, 10));
         jbCancelar = new JButton ("Cancelar");
         jbHistorialEnvio = new JButton ("Historial de envío");
+        //TODO : Esto debe estar en en otra clase, siguiendo el Patrón mvc.
+        jbHistorialEnvio.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new HistorialDeEnvioVista(RedactarMensajeVista.this).setVisible(true);
+            }
+        });
         jbEnviar = new JButton ("Enviar");
         
         jpBotones.add (jbEnviar);
@@ -222,9 +231,9 @@ public class RedactarMensajeVista extends JDialog {
         jpBotones.add (jbCancelar);
         
         //Añado los componentes al Dialog.
-        add (jtbPropiedadesMensaje, BorderLayout.NORTH);//Arriba.
-        add (jpPropiedadesMensaje, BorderLayout.CENTER);//Centro.
-        add (jpBotones, BorderLayout.SOUTH);//Abajo.
+        add (jtbPropiedadesMensaje, BorderLayout.NORTH);
+        add (jpPropiedadesMensaje, BorderLayout.CENTER);
+        add (jpBotones, BorderLayout.SOUTH);
         
         pack ();
     }

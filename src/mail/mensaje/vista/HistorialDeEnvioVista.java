@@ -1,13 +1,10 @@
 package mail.mensaje.vista;
 
 import java.awt.Dimension;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -16,15 +13,18 @@ import javax.swing.JTable;
 /**
  * Clase que muestra el historial futuro de los mensajes pendientes que van ha
  * ser enviados.
+ * 
+ * @autor Félix Pedrozo
  */
-public class HistorialDeEnvio extends JDialog {
+public class HistorialDeEnvioVista extends JDialog {
     private JTable jtHistorial;
     private JScrollPane jspHistorial;
     private JPanel jpInfo;
     private JLabel jlCantMensEnviado, jlCantMensPendiente;
     
-    public HistorialDeEnvio (JFrame frame) {
-        super (frame);
+    public HistorialDeEnvioVista (JDialog dialog) {
+        super (dialog);
+        setLocationRelativeTo(dialog);
         inicializarComponentes ();
     }
     
@@ -33,20 +33,11 @@ public class HistorialDeEnvio extends JDialog {
         setTitle("Historial de envío");
         setSize(250, 200);
         setResizable(false);
-        setLocationRelativeTo(null);
         setLayout(new BoxLayout (getContentPane(), BoxLayout.Y_AXIS));
         setModal(true);
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                HistorialDeEnvio.this.setVisible(false);
-                HistorialDeEnvio.this.dispose();
-                System.exit(0);
-            }
-        });
+        setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         
-        //TODO : Dato por auxiliares para ver el diseño de estos.
-        //Creo los datos por defecto para la tabla.
+        //TODO : Datos auxiliares.
         Object [][] data = {
             {"Enviado", "12/03/16", "13:30"},
             {"Enviado", "12/04/16", "13:30"},
