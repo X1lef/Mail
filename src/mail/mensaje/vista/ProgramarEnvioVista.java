@@ -22,6 +22,7 @@ import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.SpinnerListModel;
 import javax.swing.SpinnerNumberModel;
+import mail.mensaje.controlador.ProgramarEnvioControlador;
 
 /**
  * 
@@ -30,20 +31,23 @@ import javax.swing.SpinnerNumberModel;
 public class ProgramarEnvioVista extends JDialog {
     private JSpinner jsHoraMax, jsHoraMin, jsMinutoMax, jsMinutoMin, jsIntervalo;
     private JButton jbAceptar, jbCancelar;
-    private JLabel jlFechaMinMax, jlHoraMinMax, jlFrecuencia, jlIntervalo, jldescripcion;
+    private JLabel jlFechaMinMax, jlHoraMinMax, jlFrecuencia, jlIntervalo, jlDescripcion;
     private JPanel jpBotones, jpDias, jpEnvioProg, jpOpcionesDeEnvio;
     private JCheckBox jcbD, jcbL, jcbM, jcbX, jcbJ, jcbV, jcbS;
     private JDateChooser jdcFechaMin, jdcFechaMax;
     private JComboBox <String> jcbFrecuencia;
     private JTabbedPane jTabbedPane;
     
-    public ProgramarEnvioVista (JDialog padre) {
+    public ProgramarEnvioVista (JDialog padre, ProgramarEnvioControlador controlador) {
         super (padre, "Programar envío");
-        crearIU ();
+        crearIU (controlador);
     }
     
-    private void crearIU () {
+    private void crearIU (ProgramarEnvioControlador controlador) {
         setSize (450, 250);
+        setResizable(false);
+        setLocationRelativeTo(null);
+        setModal(true);
         setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         
@@ -95,7 +99,7 @@ public class ProgramarEnvioVista extends JDialog {
         constraints.insets = new Insets(0, 20, 10, 10);
         constraints.fill = GridBagConstraints.NONE;
         
-        jsHoraMax = new JSpinner (new SpinnerNumberModel (hora, 1, 23, 1));
+        jsHoraMax = new JSpinner (new SpinnerNumberModel (hora, 0, 23, 1));
         jpEnvioProg.add (jsHoraMax, constraints);
         
         //Componente de la fila 3 columna 1.
@@ -146,7 +150,7 @@ public class ProgramarEnvioVista extends JDialog {
         constraints.fill = GridBagConstraints.NONE;
         constraints.insets = new Insets(0, 0, 10, 10);
         
-        jsHoraMin = new JSpinner (new SpinnerNumberModel(hora, 1, 23, 1));
+        jsHoraMin = new JSpinner (new SpinnerNumberModel(hora, 0, 23, 1));
         jpEnvioProg.add (jsHoraMin, constraints);
         
         //Componente de la fila 3 columna 4.
@@ -171,6 +175,8 @@ public class ProgramarEnvioVista extends JDialog {
         jpBotones.add (jbAceptar);
         jpBotones.add (Box.createHorizontalGlue());
         jbCancelar = new JButton ("Cancelar");
+        jbCancelar.setActionCommand("jbCancelar");
+        jbCancelar.addActionListener(controlador);
         jpBotones.add (jbCancelar);
         
         //Configuro los componentes para el panel jpDias.
@@ -182,14 +188,17 @@ public class ProgramarEnvioVista extends JDialog {
         jcbV = new JCheckBox("V", true);
         jcbS = new JCheckBox("S", true);
         
+        //Por defecto las cajas de chequeo van ha estar desabilitadas.
+        habilitarDias(false);
+        
         jpDias = new JPanel (new FlowLayout(FlowLayout.CENTER, 15, 5));
         jpDias.setBorder(BorderFactory.createTitledBorder("Día de la semana"));
-        jpDias.add (jcbV);
-        jpDias.add (jcbJ);
-        jpDias.add (jcbX);
-        jpDias.add (jcbM);
-        jpDias.add (jcbL);
         jpDias.add (jcbD);
+        jpDias.add (jcbL);
+        jpDias.add (jcbM);
+        jpDias.add (jcbX);
+        jpDias.add (jcbJ);
+        jpDias.add (jcbV);
         jpDias.add (jcbS);
         
         //Configuro los componentes para el panel jpOpcionesEnvio.
@@ -212,6 +221,7 @@ public class ProgramarEnvioVista extends JDialog {
         restricciones.fill = GridBagConstraints.HORIZONTAL;
         
         jcbFrecuencia = new JComboBox<>(new String [] {"Diaria", "Semanal", "Mensual", "Anual"});
+        jcbFrecuencia.addItemListener(controlador);
         jpOpcionesDeEnvio.add (jcbFrecuencia, restricciones);
         
         //Componente de la fila 0 columna 2.
@@ -226,14 +236,16 @@ public class ProgramarEnvioVista extends JDialog {
         restricciones.gridx = 3;
         
         jsIntervalo = new JSpinner(new SpinnerNumberModel(1, 1, 100, 1));
+        jsIntervalo.addChangeListener(controlador);
+        jsIntervalo.setName("jsIntervalo");
         jpOpcionesDeEnvio.add (jsIntervalo, restricciones);
         
         //Componente de la fila 0 columna 4.
         restricciones.gridx = 4;
         
-        jldescripcion = new JLabel ("días");
-        jldescripcion.setPreferredSize(new Dimension(50, 14));
-        jpOpcionesDeEnvio.add (jldescripcion, restricciones);
+        jlDescripcion = new JLabel ("día");
+        jlDescripcion.setPreferredSize(new Dimension(50, 14));
+        jpOpcionesDeEnvio.add (jlDescripcion, restricciones);
         
         //Componente de la fila 1 columna 0.
         restricciones.gridx = 0;
@@ -254,5 +266,36 @@ public class ProgramarEnvioVista extends JDialog {
         //Inserción de los componentes al Frame.
         add (jTabbedPane);
         add (jpBotones);
+    }
+    
+    public void actualizarPorCantidad (int cantidad, String singular, String plural) {
+        if (cantidad == 1) {
+            if (!jlDescripcion.getText().equals(singular))
+                jlDescripcion.setText(singular);
+            
+        } else if (!jlDescripcion.getText().equals(plural))
+            jlDescripcion.setText(plural);
+    }
+    
+    public void habilitarDias (boolean estado) {
+        if (jcbD.isEnabled() != estado) {
+            jcbD.setEnabled(estado);
+            jcbL.setEnabled(estado);
+            jcbM.setEnabled(estado);
+            jcbX.setEnabled(estado);
+            jcbJ.setEnabled(estado);
+            jcbV.setEnabled(estado);
+            jcbS.setEnabled(estado);
+        }
+    }
+    
+    public void seleccionarDias () {
+        jcbD.setSelected(true);
+        jcbL.setSelected(true);
+        jcbM.setSelected(true);
+        jcbX.setSelected(true);
+        jcbJ.setSelected(true);
+        jcbV.setSelected(true);
+        jcbS.setSelected(true);
     }
 }

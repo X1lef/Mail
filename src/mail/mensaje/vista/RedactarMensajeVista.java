@@ -5,12 +5,12 @@ import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.io.File;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -22,6 +22,8 @@ import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
+import javax.swing.filechooser.FileFilter;
+import mail.mensaje.controlador.RedactarMensajeControlador;
 
 /**
  * @author Félix Pedrozo
@@ -40,15 +42,16 @@ public class RedactarMensajeVista extends JDialog {
         jbAgregarLink, jbSubrayado;
     
     
-    public RedactarMensajeVista (JFrame frame) {
-        super(frame);
-        crearIU();
+    public RedactarMensajeVista (JFrame frame, RedactarMensajeControlador controlador) {
+        super(frame, "Redactar mensaje");
+        crearIU(controlador);
     }
     
-    private void crearIU () {
+    private void crearIU (RedactarMensajeControlador controlador) {
         //Configración de las propiedades del Dialog.
-        setTitle("Redactar mensaje");
         setModal(true);
+        setSize(900, 650);
+        setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         
         //Configurando los componentes del jpRedactarMensaje.
@@ -58,6 +61,8 @@ public class RedactarMensajeVista extends JDialog {
         
         jbAgregarImagen = new JButton ();
         jbAgregarImagen.setToolTipText("Agregar imagen");
+        jbAgregarImagen.setName ("jbAgregarImagen");
+        jbAgregarImagen.addActionListener(controlador);
         jbAgregarImagen.setIcon(
             new ImageIcon(getClass().getResource("iconos/imagen.png"))
         );
@@ -131,6 +136,8 @@ public class RedactarMensajeVista extends JDialog {
          
          jbContactosIr = new JButton("...");
          jbContactosIr.setToolTipText("Ir a contactos (Ctrl+Alt+C)");
+         jbContactosIr.setName("jbContactosIr");
+         jbContactosIr.addActionListener(controlador);
          jpPropiedadesMensaje.add (jbContactosIr, constraints);
          
          //Componente de la fila 0 columna 1.
@@ -204,26 +211,20 @@ public class RedactarMensajeVista extends JDialog {
                 new ImageIcon (getClass().getResource("/mail/mensaje/vista/iconos/time.png"))
         );
         jbProgramarEnvio.setToolTipText("Programar envío (Ctrl+E)");
+        jbProgramarEnvio.setName("jbProgramarEnvio");
         jbProgramarEnvio.setFocusable (false);
-        //TODO : Esto debe estar en en otra clase, siguiendo el Patrón mvc.
-        jbProgramarEnvio.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new ProgramarEnvioVista(RedactarMensajeVista.this).setVisible(true);
-            }
-        });
+        jbProgramarEnvio.addActionListener(controlador);
         jtbPropiedadesMensaje.add (jbProgramarEnvio);
         
         jpBotones = new JPanel (new FlowLayout (FlowLayout.RIGHT, 10, 10));
         jbCancelar = new JButton ("Cancelar");
+        jbCancelar.setName("jbCancelar");
+        jbCancelar.addActionListener(controlador);
+        
         jbHistorialEnvio = new JButton ("Historial de envío");
-        //TODO : Esto debe estar en en otra clase, siguiendo el Patrón mvc.
-        jbHistorialEnvio.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new HistorialDeEnvioVista(RedactarMensajeVista.this).setVisible(true);
-            }
-        });
+        jbHistorialEnvio.setName("jbHistorialEnvio");
+        jbHistorialEnvio.addActionListener(controlador);
+        
         jbEnviar = new JButton ("Enviar");
         
         jpBotones.add (jbEnviar);
@@ -234,7 +235,23 @@ public class RedactarMensajeVista extends JDialog {
         add (jtbPropiedadesMensaje, BorderLayout.NORTH);
         add (jpPropiedadesMensaje, BorderLayout.CENTER);
         add (jpBotones, BorderLayout.SOUTH);
-        
-        pack ();
+    }
+    
+    public void mostrarSelectorDeArchivos () {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileFilter(new FileFilter () {
+            @Override
+            public boolean accept(File f) {
+                String path = f.getPath();
+                return (f.isDirectory() || path.endsWith(UtilImg.GIF) ||
+                        path.endsWith(UtilImg.JPEG) || path.endsWith(UtilImg.JPG) ||
+                        path.endsWith(UtilImg.PNG));
+            }
+            @Override
+            public String getDescription() {
+                return "Imagenes";
+            }
+        });
+        fileChooser.showOpenDialog(this);
     }
 }

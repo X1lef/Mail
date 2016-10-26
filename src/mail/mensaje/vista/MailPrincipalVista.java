@@ -2,22 +2,25 @@ package mail.mensaje.vista;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import javax.swing.ImageIcon;
+import java.awt.event.KeyEvent;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
 import javax.swing.JToolBar.Separator;
 import javax.swing.JTree;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
 import javax.swing.table.DefaultTableModel;
@@ -34,31 +37,45 @@ public class MailPrincipalVista extends JFrame {
     private JTree jTree;
     private JTable jtMensajes;
     private JScrollPane jspMenPane, jspTablaMensaje;
-    private JLabel jlConexion;
+    private JLabel jlConexion, jlCantMensajes;
     private JMenuBar menuBar;
-    private JMenu jmArchivo, jmMensajes, jmIr, jmHerramientas;
+    private JMenu jmArchivo, jmMensajes, jmIr, jmHerramientas, jmLookAndFeel;
     private Separator sp1, sp2;
     private JButton jbInicio, jbRedactar, jbIngresarContacto,
         jbIngresarEmpresa, jbIrContactos, jbEliminarMensaje, jbResponder, 
-        jbResponderTodos, jbReenviarMensaje, jbEditarMensaje, jbRetornarMensaje;
-    private JPanel jpCenter, jpSouth;
+        jbResponderTodos, jbReenviarMensaje, jbEditarMensaje, jbRetornarMensaje,
+        jbIrEmpresas;
+    private JPanel jpCenter, jpSouth, jpWest;
     private JToolBar toolBar;
+    private MailControlador controlador;
     
-    public MailPrincipalVista (MailControlador evento) {
-        crearIU (evento);
+    public MailPrincipalVista (MailControlador controlador) {
+        this.controlador = controlador;
+        crearIU ();
     }
     
     /**
      * Se encarga de inicializar los componentes que forman la IU, también
      * agrega los componentes al contenedor.
      */
-    private void crearIU (MailControlador mailControlador) {
+    private void crearIU () {
         //Inicializando los menus.
         jmArchivo = new JMenu ("Archivo");
         jmMensajes = new JMenu ("Mensajes");
         jmIr = new JMenu ("Ir");
         jmHerramientas = new JMenu ("Herramientas");
+        jmLookAndFeel = new JMenu ("Look And Feel");
         
+        //Creo los item de los diferentes Look And Feel que pueden ser instalados para la plataforma.
+        ButtonGroup group = new ButtonGroup();
+        for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+            JRadioButtonMenuItem item = new JRadioButtonMenuItem(info.getName());
+            item.addItemListener(controlador);
+            group.add (item);
+            jmLookAndFeel.add (item);
+        }
+        jmHerramientas.add (jmLookAndFeel);
+            
         //Inicializando el menuBar y añadiendo los menus.
         menuBar = new JMenuBar();
         menuBar.add(jmArchivo);
@@ -66,135 +83,13 @@ public class MailPrincipalVista extends JFrame {
         menuBar.add(jmIr);
         menuBar.add(jmHerramientas);
         
-        //Inicializo los botones para añadir al toolBar.
-        jbInicio = new JButton("Inicio");
-        jbInicio.setName("jbInicio");
-        jbInicio.setIcon(
-            new ImageIcon(getClass().getResource("iconos\\inicio.png"))
-        );
-        jbInicio.setFocusable(false);
-        jbInicio.setToolTipText("Inicio (Ctrl+I)");
-        jbInicio.addActionListener(mailControlador);
-        
-        jbRedactar = new JButton("Redactar mensaje");
-        jbRedactar.setName("jbRedactar");
-        jbRedactar.setIcon(
-            new ImageIcon(getClass().getResource("iconos\\email_redactar.png"))
-        );
-        jbRedactar.setFocusable(false);
-        jbRedactar.addActionListener(mailControlador);
-        jbRedactar.setToolTipText("Redactar mensaje (Ctrl+M)");
-        
-        jbIngresarContacto = new JButton("Ingresar contacto");
-        jbIngresarContacto.setName("jbIngresarContacto");
-        jbIngresarContacto.setIcon(
-            new ImageIcon(getClass().getResource("iconos\\ingresar_contacto.png"))
-        );
-        jbIngresarContacto.setFocusable(false);
-        jbIngresarContacto.addActionListener(mailControlador);
-        jbIngresarContacto.setToolTipText("Ingresar contacto (Ctrl+Alt+C)");
-        
-        jbIngresarEmpresa = new JButton("Ingresar empresa");
-        jbIngresarEmpresa.setName("jbIngresarEmpresa");
-        jbIngresarEmpresa.setIcon(
-            new ImageIcon(getClass().getResource("iconos\\ingresar_empresa.png"))
-        );
-        jbIngresarEmpresa.setFocusable(false);
-        jbIngresarEmpresa.addActionListener(mailControlador);
-        jbIngresarEmpresa.setToolTipText("Ingresar empresa (Ctrl+E)");
-        
-        
-        jbIrContactos = new JButton("Ir a contactos");
-        jbIrContactos.setName("jbIrContactos");
-        jbIrContactos.setIcon(
-            new ImageIcon(getClass().getResource("iconos\\contactos_ir.png"))
-        );
-        jbIrContactos.setFocusable(false);
-        jbIrContactos.addActionListener(mailControlador);
-        jbIrContactos.setToolTipText("Ir a contactos (Ctrl+A)");
-        
-        jbEliminarMensaje = new JButton("Eliminar mensaje");
-        jbEliminarMensaje.setName("jbEliminarMensaje");
-        jbEliminarMensaje.setIcon(
-            new ImageIcon(getClass().getResource("iconos\\email_eliminar.png"))
-        );
-        jbEliminarMensaje.setFocusable(false);
-        jbEliminarMensaje.setVisible(false);
-        jbEliminarMensaje.setToolTipText("Eliminar mensaje");
-        
-        jbResponder = new JButton("Responder mensaje");
-        jbResponder.setIcon(
-            new ImageIcon(getClass().getResource("iconos\\responder_mensaje.png"))
-        );
-        jbResponder.setFocusable(false);
-        jbResponder.setVisible(false);
-        jbResponder.setToolTipText("Responder mensaje");
-        
-        jbResponderTodos = new JButton("Responder a todos");
-        jbResponderTodos.setIcon(
-            new ImageIcon(getClass().getResource("iconos\\responder_mensaje.png"))
-        );
-        jbResponderTodos.setFocusable(false);
-        jbResponderTodos.setVisible(false);
-        jbResponderTodos.setToolTipText("Responder a todos");
-        
-        jbReenviarMensaje = new JButton("Reenviar mensaje");
-        jbReenviarMensaje.setIcon(
-            new ImageIcon(getClass().getResource("iconos\\responder_mensaje.png"))
-        );
-        jbReenviarMensaje.setFocusable(false);
-        jbReenviarMensaje.setVisible(false);
-        jbReenviarMensaje.setToolTipText("Reenviar mensaje");
-        
-        jbEditarMensaje = new JButton("Editar mensaje");
-        jbEditarMensaje.setIcon(
-            new ImageIcon(getClass().getResource("iconos\\responder_mensaje.png"))
-        );
-        jbEditarMensaje.setFocusable(false);
-        jbEditarMensaje.setVisible(false);
-        jbEditarMensaje.setToolTipText("Editar mensaje");
-        
-        jbRetornarMensaje = new JButton("Retornar mensaje");
-        jbRetornarMensaje.setIcon(
-            new ImageIcon(getClass().getResource("iconos\\responder_mensaje.png"))
-        );
-        jbRetornarMensaje.setFocusable(false);
-        jbRetornarMensaje.setVisible(false);
-        jbRetornarMensaje.setToolTipText("Retornar mensaje");
-        
-        sp1 = new JToolBar.Separator();
-        sp2 = new JToolBar.Separator();
-        
-        //Inserto los botones al toolbar.
         toolBar = new JToolBar();
         //Agrego borde al toolBar.
         toolBar.setBorder(new SoftBevelBorder(BevelBorder.RAISED));
-        
-        toolBar.add(jbInicio);
-        toolBar.add(sp1);
-        toolBar.add(jbRedactar);
-        
-        toolBar.add(jbResponder);
-        toolBar.add(jbResponderTodos);
-        toolBar.add(jbEditarMensaje);
-        toolBar.add(jbEliminarMensaje);
-        toolBar.add(jbReenviarMensaje);
-        toolBar.add(jbRetornarMensaje);
-        
-        toolBar.add(sp2);
-        toolBar.add(jbIngresarContacto);
-        toolBar.add(jbIrContactos);
-        toolBar.add(jbIngresarEmpresa);
-        
-        //Inicializando el label.
-        //TODO : Valor por defecto que lo agrego para ver como queda.
-        jlConexion = new JLabel("Internet deshabilitado");
-        jlConexion.setIcon(
-            new ImageIcon(getClass().getResource("iconos\\disconnect.png"))
-        );
-        
-        jpSouth = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 2));
-        jpSouth.add(jlConexion);
+        //Inserto los botones al toolbar.
+        addButtons(toolBar);
+        //Configuro los botones que seran visibles.
+        activarVisibilidad(true, false, false, false, false, false);
         
         jtMensajes = new JTable (new DefaultTableModel(
             new Object [][] {
@@ -211,16 +106,9 @@ public class MailPrincipalVista extends JFrame {
         jspTablaMensaje = new JScrollPane ();
         jspTablaMensaje.setViewportView(jtMensajes);
         
-        DefaultMutableTreeNode treeNodeMain = new DefaultMutableTreeNode("root");
-        DefaultMutableTreeNode treeNode1 = new DefaultMutableTreeNode("Mensajes");
-        
-        DefaultMutableTreeNode treeNode2 = new DefaultMutableTreeNode("Enviados");
-        treeNode1.add(treeNode2);
-        treeNode2 = new DefaultMutableTreeNode("Eliminados");
-        treeNode1.add(treeNode2);
-        treeNode2 = new DefaultMutableTreeNode("Guardados");
-        treeNode1.add(treeNode2);
-        treeNodeMain.add(treeNode1);
+        DefaultMutableTreeNode treeNodeMain = new DefaultMutableTreeNode("Tipos de mensajes");
+        //Cargo los nodos al nodo principal.
+        createNodes (treeNodeMain);
         
         //Inicializo el componente JTree y le agrego los nodos.
         jTree = new JTree();
@@ -228,35 +116,54 @@ public class MailPrincipalVista extends JFrame {
         jTree.setRootVisible(false);
         jTree.setToggleClickCount(1);
         
-        jTree.addTreeSelectionListener(mailControlador);
+        jTree.addTreeSelectionListener(controlador);
+        jTree.setPreferredSize(new Dimension(150, 90));
         
-        jspMenPane = new JScrollPane();
-        jspMenPane.setViewportView(jTree);
+        jspMenPane = new JScrollPane(jTree);
         
-        jpCenter = new JPanel(new GridBagLayout ());
+        //Configuro los componentes del panel jpWest.
+        jpWest = new JPanel (new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints ();
-        //Componente de la fila 0 columna 0.
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.weighty = 1.0;
-        //TODO : Posee un error al poner esto en el JTree al presionar un nodo.
-        constraints.ipadx = 80;
         constraints.fill = GridBagConstraints.VERTICAL;
-        constraints.insets = new Insets(10, 10, 5, 10);
+        constraints.insets = new Insets (10, 10, 3, 10);
         
-        jpCenter.add (jspMenPane, constraints);
+        jpWest.add (jspMenPane, constraints);
         
-        //Componente de la fila 0 columna 1.
-        constraints.gridx = 1;
+        //Configuro los componentes del panel jpCenter.
+        jpCenter = new JPanel (new GridBagLayout());
         constraints.weightx = 1.0;
-        constraints.ipadx = 0;
         constraints.fill = GridBagConstraints.BOTH;
-        constraints.insets = new Insets(10, 0, 5, 10);
+        constraints.insets = new Insets(10, 0, 3, 10);
         
         jpCenter.add (jspTablaMensaje, constraints);
         
+        //Configuro los componentes del panel jpSouth.
+        jpSouth = new JPanel(new GridBagLayout());
+        //Componente de la fila 0 columna 0.
+        constraints.weighty = 0.0;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.anchor = GridBagConstraints.WEST;
+        constraints.insets = new Insets (0, 10, 3, 0);
+        
+        jlCantMensajes = new JLabel ("Cantidad de mensajes");
+        jpSouth.add (jlCantMensajes, constraints);
+        
+        //Componente de la fila 0 columna 1.
+        constraints.gridx = 1;
+        constraints.anchor = GridBagConstraints.EAST;
+        constraints.insets = new Insets (0, 0, 3, 10);
+        
+        //TODO : Valor por defecto que lo agrego para ver como queda.
+        jlConexion = new JLabel("Internet deshabilitado", JLabel.RIGHT);
+        jlConexion.setIcon(UtilImg.createImageIcon("iconos\\disconnect.png"));
+        jpSouth.add (jlConexion, constraints);
+        
         //Configuro mi Frame.
         setTitle("Mail");
+        setLayout(new BorderLayout());
         
         //Añadiendo el menuBar al JFrame.
         setJMenuBar(menuBar);
@@ -264,6 +171,7 @@ public class MailPrincipalVista extends JFrame {
         //Añado al JFrame los componentes.
         add (BorderLayout.NORTH, toolBar);
         add (BorderLayout.SOUTH, jpSouth);
+        add (BorderLayout.WEST, jpWest);
         add (BorderLayout.CENTER, jpCenter);
         
         //El tamaño minimo en la que puede ser minimizado.
@@ -271,7 +179,6 @@ public class MailPrincipalVista extends JFrame {
         //Maximimo la ventana por defecto.
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setVisible(true);
     }
     
     /**
@@ -287,6 +194,7 @@ public class MailPrincipalVista extends JFrame {
     public void activarVisibilidad (boolean act1, boolean act2, boolean act3, boolean act4, boolean act5, boolean act6) {
         jbIngresarContacto.setVisible(act1);
         jbIngresarEmpresa.setVisible(act1);
+        jbIrEmpresas.setVisible(act1);
         jbIrContactos.setVisible(act1);
         sp2.setVisible(act1);
         
@@ -305,5 +213,131 @@ public class MailPrincipalVista extends JFrame {
      */
     public JTree getTree () {
         return jTree;
+    }
+    
+    public void setLookAndFeel (String className) {
+        try {
+            UIManager.setLookAndFeel(className);
+            SwingUtilities.updateComponentTreeUI(this);
+        }catch (Exception ex) {
+            setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+        }
+    }
+    
+    private void createNodes (DefaultMutableTreeNode topNode) {
+        DefaultMutableTreeNode categoria = null,
+                               tipoDeMensaje = null;
+        
+        categoria = new DefaultMutableTreeNode ("Mensajes");
+        topNode.add (categoria);
+        
+        tipoDeMensaje = new DefaultMutableTreeNode("Enviados");
+        categoria.add (tipoDeMensaje);
+        
+        tipoDeMensaje = new DefaultMutableTreeNode("Recibidos");
+        categoria.add (tipoDeMensaje);
+        
+        tipoDeMensaje = new DefaultMutableTreeNode("Guardados");
+        categoria.add (tipoDeMensaje);
+        
+        tipoDeMensaje = new DefaultMutableTreeNode("Eliminados");
+        categoria.add (tipoDeMensaje);
+    }
+    
+    private void addButtons (JToolBar toolBar) {
+        jbInicio = configurarBoton("Inicio",
+                                 "iconos/inicio.png",
+                                 "jbInicio", "Inicio (Alt+I)",
+                                 KeyEvent.VK_I);
+        
+        jbRedactar = configurarBoton("Redactar mensaje",
+                                 "iconos/email_redactar.png",
+                                 "jbRedactar", "Redactar mensaje (Alt+R)",
+                                 KeyEvent.VK_R);
+        
+        jbIngresarContacto = configurarBoton("Ingresar contacto",
+                                 "iconos/ingresar_contacto.png",
+                                 "jbIngresarContacto", "Ingresar contacto (Alt+C)",
+                                 KeyEvent.VK_C);
+        
+        jbIrContactos = configurarBoton("Ir a contacto",
+                                 "iconos/contactos_ir.png",
+                                 "jbIrContactos", "Ir a contacto (Alt+Z)",
+                                 KeyEvent.VK_Z);
+        
+        jbIngresarEmpresa = configurarBoton("Ingresar empresa",
+                                 "iconos/ingresar_empresa.png",
+                                 "jbIngresarEmpresa", "Ingresar empresa (Alt+E)",
+                                 KeyEvent.VK_E);
+        
+        jbIrEmpresas = configurarBoton("Ir a empresa",
+                                 "iconos/ingresar_empresa.png",
+                                 "jbIrEmpresas", "Ir a empresas (Alt+X)",
+                                 KeyEvent.VK_X);
+        
+        jbEliminarMensaje = configurarBoton("Eliminar mensaje",
+                                 "iconos/email_eliminar.png",
+                                 "jbElimnarMensaje", "Eliminar mensaje (Alt+I)",
+                                 0);
+        
+        jbResponder = configurarBoton("Responder",
+                                 "iconos/responder_mensaje.png",
+                                 "jbResponder", "Responder (Alt+I)",
+                                 0);
+        
+        jbResponderTodos = configurarBoton("Responder a todos",
+                                 "iconos/responder_mensaje.png",
+                                 "jbResponderTodos", "Responder a todos (Alt+I)",
+                                 0);
+        
+        jbReenviarMensaje = configurarBoton("Reenviar mensaje",
+                                 "iconos/responder_mensaje.png",
+                                 "jbReenviarMensaje", "Reenviar mensaje (Alt+I)",
+                                 0);
+        
+        jbEditarMensaje = configurarBoton("Editar mensaje",
+                                 "iconos/responder_mensaje.png",
+                                 "jbEditarMensaje", "Editar mensaje (Alt+I)",
+                                 0);
+        
+        jbRetornarMensaje = configurarBoton("Retornar mensaje",
+                                 "iconos/responder_mensaje.png",
+                                 "jbRetornarMensaje", "Retornar mensaje (Alt+I)",
+                                 0);
+        
+        toolBar.add(jbInicio);
+        sp1 = new JToolBar.Separator();
+        toolBar.add(sp1);
+        toolBar.add(jbRedactar);
+        
+        toolBar.add(jbResponder);
+        toolBar.add(jbResponderTodos);
+        toolBar.add(jbEditarMensaje);
+        toolBar.add(jbEliminarMensaje);
+        toolBar.add(jbReenviarMensaje);
+        toolBar.add(jbRetornarMensaje);
+        
+        sp2 = new JToolBar.Separator();
+        toolBar.add(sp2);
+        toolBar.add(jbIngresarContacto);
+        toolBar.add(jbIrContactos);
+        toolBar.add(jbIngresarEmpresa);
+        toolBar.add(jbIrEmpresas);
+    }
+    
+    private JButton configurarBoton (String text, String imagePath,
+                                     String actionCommand,
+                                     String toolTipText,
+                                     int mnemonic) {
+        
+        JButton button = new JButton (text);
+        button.setFocusable(false);
+        button.setMnemonic(mnemonic);
+        button.setToolTipText(toolTipText);
+        button.addActionListener(controlador);
+        button.setActionCommand(actionCommand);
+        button.setIcon(UtilImg.createImageIcon (imagePath));
+        
+        return button;
     }
 }

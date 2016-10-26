@@ -18,9 +18,9 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
+import mail.mensaje.controlador.OperacionesDeEmpresaControlador;
 
 /**
- *
  * @author Félix Pedrozo
  */
 public class OperacionesDeEmpresaVista extends JDialog {
@@ -33,20 +33,44 @@ public class OperacionesDeEmpresaVista extends JDialog {
     private JTable jtEmpresa;
     private JScrollPane jspTablaEmpresa;
 
-    public OperacionesDeEmpresaVista (JFrame frame) {
+    public OperacionesDeEmpresaVista (JFrame frame, int indice,
+            OperacionesDeEmpresaControlador controlador) {
         super (frame, "Empresa");
-        crearIU ();
+        crearIU (indice, controlador);
+    }
+    
+    public OperacionesDeEmpresaVista (JFrame frame,
+            OperacionesDeEmpresaControlador controlador) {
+        this (frame, 0, controlador);
+    }
+    
+    public OperacionesDeEmpresaVista (JDialog dialog, int indice,
+            OperacionesDeEmpresaControlador controlador) {
+        super (dialog, "Empresa");
+        crearIU (indice, controlador);
+    }
+    
+    public OperacionesDeEmpresaVista (JDialog dialog,
+            OperacionesDeEmpresaControlador controlador) {
+        this (dialog, 0, controlador);
     }
 
-    private void crearIU () {
+    private void crearIU (int indice, OperacionesDeEmpresaControlador controlador) {
         setSize(570, 450);
         setLayout(new GridLayout(1, 0));
+        setLocationRelativeTo(null);
+        setModal(true);
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
         //Configuro los componentes para el panel jpBotones.
         jbGuardar = new JButton ("Guardar");
+        
         jbEliminar = new JButton ("Eliminar");
+        jbEliminar.setEnabled(false);
+        
         jbCancelar = new JButton ("Cancelar");
+        jbCancelar.setActionCommand("jbCancelar");
+        jbCancelar.addActionListener(controlador);
 
         jpBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
         jpBotones.add (jbGuardar);
@@ -193,6 +217,8 @@ public class OperacionesDeEmpresaVista extends JDialog {
         jTabbedPane = new JTabbedPane();
         jTabbedPane.add ("ABM", jpABM);
         jTabbedPane.add ("Consulta", jpConsulta);
+        //Le indico el indice de la pestaña que se mostrara.
+        jTabbedPane.setSelectedIndex(indice);
 
         //Inserto al Dialog el TabbedPane.
         add (jTabbedPane);

@@ -19,6 +19,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import mail.mensaje.controlador.OperacionContactoControlador;
 
 /**
  * @author Félix Pedrozo
@@ -34,20 +35,48 @@ public class OperacionesDeContactoVista extends JDialog {
     private JTable jtContacto;
     private JScrollPane jspTablaContacto;
 
-    public OperacionesDeContactoVista (JFrame frame) {
+    public OperacionesDeContactoVista (JFrame frame, int indice,
+            OperacionContactoControlador controlador) {
         super (frame, "Contactos");
-        crearIU ();
+        crearIU (indice, controlador);
     }
-
-    private void crearIU () {
+    
+    public OperacionesDeContactoVista (JFrame frame, 
+              OperacionContactoControlador controlador) {
+        this (frame, 0, controlador);
+    }
+    
+    public OperacionesDeContactoVista (JDialog dialog, int indice,
+                OperacionContactoControlador controlador) {
+        super (dialog, "Contactos");
+        crearIU (indice, controlador);
+    }
+    
+    public OperacionesDeContactoVista (JDialog dialog,
+                OperacionContactoControlador controlador) {
+        this (dialog, 0, controlador);
+    }
+    
+    private void crearIU (int indice, OperacionContactoControlador controlador) {
+        setModal(true);
         setSize(570, 450);
+        setLocationRelativeTo(null);
         setLayout(new GridLayout(1, 0));
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
         //Configuro los componentes para el panel jpBotones.
         jbGuardar = new JButton ("Guardar");
+        jbGuardar.setActionCommand("jbGuardar");
+        jbGuardar.addActionListener(controlador);
+        
         jbEliminar = new JButton ("Eliminar");
+        jbEliminar.setEnabled(false);
+        jbEliminar.setActionCommand("jbEliminar");
+        jbEliminar.addActionListener(controlador);
+        
         jbCancelar = new JButton ("Cancelar");
+        jbCancelar.setActionCommand("jbCancelar");
+        jbCancelar.addActionListener(controlador);
 
         jpBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
         jpBotones.add (jbGuardar);
@@ -58,7 +87,6 @@ public class OperacionesDeContactoVista extends JDialog {
         jpABM = new JPanel (new GridBagLayout());
 
         GridBagConstraints constraints = new GridBagConstraints();
-
         //Componente de la fila 0 columna 0.
         constraints.gridx = 0;
         constraints.gridy = 0;
@@ -127,6 +155,8 @@ public class OperacionesDeContactoVista extends JDialog {
         constraints.insets = new Insets(0, 0, 10, 20);
 
         jbIngresarEmpresa = new JButton ("Añadir empresa");
+        jbIngresarEmpresa.addActionListener(controlador);
+        jbIngresarEmpresa.setActionCommand("jbIngresarEmpresa");
         jpABM.add (jbIngresarEmpresa, constraints);
 
         //Componente de la fila 4 columna 0.
@@ -233,6 +263,8 @@ public class OperacionesDeContactoVista extends JDialog {
         jTabbedPane = new JTabbedPane();
         jTabbedPane.add ("ABM", jpABM);
         jTabbedPane.add ("Consulta", jpConsulta);
+        //Le indico el indice de la pestaña que se mostrara.
+        jTabbedPane.setSelectedIndex(indice);
 
         //Inserto al Dialog el TabbedPane.
         add (jTabbedPane);

@@ -24,14 +24,14 @@ public class HistorialDeEnvioVista extends JDialog {
     
     public HistorialDeEnvioVista (JDialog dialog) {
         super (dialog);
-        setLocationRelativeTo(dialog);
         inicializarComponentes ();
     }
     
     private void inicializarComponentes () {
         //Configuro al JDialog.
         setTitle("Historial de envío");
-        setSize(250, 200);
+        setSize(270, 230);
+        setLocationRelativeTo(null);
         setResizable(false);
         setLayout(new BoxLayout (getContentPane(), BoxLayout.Y_AXIS));
         setModal(true);
