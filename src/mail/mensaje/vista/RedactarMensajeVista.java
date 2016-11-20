@@ -51,12 +51,14 @@ public class RedactarMensajeVista extends JDialog {
         //Configración de las propiedades del Dialog.
         setModal(true);
         setSize(900, 650);
+        //Configuro para que al abrir la ventana, se muestre al medio de la pantalla.
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         
         //Configurando los componentes del jpRedactarMensaje.
         jpRedactarMensaje = new JPanel (new BorderLayout ());
         
+        //Inicializo la toolBar que perttenece a redactar mensaje.
         jtbRedactarMensaje = new JToolBar ();
         
         jbAgregarImagen = new JButton ();
@@ -239,12 +241,14 @@ public class RedactarMensajeVista extends JDialog {
     
     public void mostrarSelectorDeArchivos () {
         JFileChooser fileChooser = new JFileChooser();
+        //Creo una clase anonima que contiene la configuracion de filtrado de las imagenes.
         fileChooser.setFileFilter(new FileFilter () {
             @Override
             public boolean accept(File f) {
                 String path = f.getPath();
                 return (f.isDirectory() || path.endsWith(UtilImg.GIF) ||
-                        path.endsWith(UtilImg.JPEG) || path.endsWith(UtilImg.JPG) ||
+                        path.endsWith(UtilImg.JPEG) || 
+                        path.endsWith(UtilImg.JPG) ||
                         path.endsWith(UtilImg.PNG));
             }
             @Override
@@ -252,6 +256,7 @@ public class RedactarMensajeVista extends JDialog {
                 return "Imagenes";
             }
         });
+        //Muestro el selector de archivos.
         fileChooser.showOpenDialog(this);
     }
 }

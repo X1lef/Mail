@@ -29,7 +29,7 @@ import javax.swing.tree.DefaultTreeModel;
 import mail.mensaje.controlador.MailControlador;
 
 /**
- * Ventana de inicio del programa, en la que solo contendrá la vista.
+ * Ventana principal del programa.
  * 
  * @author Félix Pedrozo
  */
@@ -49,6 +49,10 @@ public class MailPrincipalVista extends JFrame {
     private JToolBar toolBar;
     private MailControlador controlador;
     
+    /**
+     * @param controlador Referencia de la clase que manejara los eventos de
+     * la clase <code>MailPrincipal</code>
+     */
     public MailPrincipalVista (MailControlador controlador) {
         this.controlador = controlador;
         crearIU ();
@@ -76,7 +80,7 @@ public class MailPrincipalVista extends JFrame {
         }
         jmHerramientas.add (jmLookAndFeel);
             
-        //Inicializando el menuBar y añadiendo los menus.
+        //Inicializando el menuBar y añado los menus.
         menuBar = new JMenuBar();
         menuBar.add(jmArchivo);
         menuBar.add(jmMensajes);
@@ -117,6 +121,7 @@ public class MailPrincipalVista extends JFrame {
         jTree.setToggleClickCount(1);
         
         jTree.addTreeSelectionListener(controlador);
+        //Le configuro un tamaño por defecto.
         jTree.setPreferredSize(new Dimension(150, 90));
         
         jspMenPane = new JScrollPane(jTree);
@@ -224,9 +229,13 @@ public class MailPrincipalVista extends JFrame {
         }
     }
     
+    /**
+     * Insertara los nodos secundarios al nodo principal.
+     * @param topNode Contiene la referencia del nodo principal.
+     */
     private void createNodes (DefaultMutableTreeNode topNode) {
-        DefaultMutableTreeNode categoria = null,
-                               tipoDeMensaje = null;
+        DefaultMutableTreeNode tipoDeMensaje = null,
+                               categoria = null;
         
         categoria = new DefaultMutableTreeNode ("Mensajes");
         topNode.add (categoria);
@@ -244,67 +253,66 @@ public class MailPrincipalVista extends JFrame {
         categoria.add (tipoDeMensaje);
     }
     
+    /**
+     * Creara los botones para insertarlo a la barra de herramientas.
+     * @param toolBar Contiene la referencia de la barra de herramientas principal.
+     */
     private void addButtons (JToolBar toolBar) {
         jbInicio = configurarBoton("Inicio",
                                  "iconos/inicio.png",
-                                 "jbInicio", "Inicio (Alt+I)",
-                                 KeyEvent.VK_I);
+                                 "jbInicio", "Inicio (Alt+I)");
+        jbInicio.setMnemonic(KeyEvent.VK_I);
         
         jbRedactar = configurarBoton("Redactar mensaje",
                                  "iconos/email_redactar.png",
-                                 "jbRedactar", "Redactar mensaje (Alt+R)",
-                                 KeyEvent.VK_R);
+                                 "jbRedactar", "Redactar mensaje (Alt+R)");
+        jbRedactar.setMnemonic(KeyEvent.VK_R);
         
         jbIngresarContacto = configurarBoton("Ingresar contacto",
                                  "iconos/ingresar_contacto.png",
-                                 "jbIngresarContacto", "Ingresar contacto (Alt+C)",
-                                 KeyEvent.VK_C);
+                                 "jbIngresarContacto", "Ingresar contacto (Alt+C)");
+        jbIngresarContacto.setMnemonic(KeyEvent.VK_C);
         
         jbIrContactos = configurarBoton("Ir a contacto",
                                  "iconos/contactos_ir.png",
-                                 "jbIrContactos", "Ir a contacto (Alt+Z)",
-                                 KeyEvent.VK_Z);
+                                 "jbIrContactos", "Ir a contacto (Alt+Z)");
+        jbIrContactos.setMnemonic(KeyEvent.VK_Z);
         
         jbIngresarEmpresa = configurarBoton("Ingresar empresa",
                                  "iconos/ingresar_empresa.png",
-                                 "jbIngresarEmpresa", "Ingresar empresa (Alt+E)",
-                                 KeyEvent.VK_E);
+                                 "jbIngresarEmpresa", "Ingresar empresa (Alt+E)");
+        jbIngresarEmpresa.setMnemonic(KeyEvent.VK_E);
         
         jbIrEmpresas = configurarBoton("Ir a empresa",
                                  "iconos/ingresar_empresa.png",
-                                 "jbIrEmpresas", "Ir a empresas (Alt+X)",
-                                 KeyEvent.VK_X);
+                                 "jbIrEmpresas", "Ir a empresas (Alt+X)");
+        jbIrEmpresas.setMnemonic(KeyEvent.VK_X);
         
         jbEliminarMensaje = configurarBoton("Eliminar mensaje",
                                  "iconos/email_eliminar.png",
-                                 "jbElimnarMensaje", "Eliminar mensaje (Alt+I)",
-                                 0);
+                                 "jbElimnarMensaje", "Eliminar mensaje (Alt+I)");
         
         jbResponder = configurarBoton("Responder",
                                  "iconos/responder_mensaje.png",
-                                 "jbResponder", "Responder (Alt+I)",
-                                 0);
+                                 "jbResponder", "Responder (Alt+I)");
         
         jbResponderTodos = configurarBoton("Responder a todos",
                                  "iconos/responder_mensaje.png",
-                                 "jbResponderTodos", "Responder a todos (Alt+I)",
-                                 0);
+                                 "jbResponderTodos", "Responder a todos (Alt+I)");
         
         jbReenviarMensaje = configurarBoton("Reenviar mensaje",
                                  "iconos/responder_mensaje.png",
-                                 "jbReenviarMensaje", "Reenviar mensaje (Alt+I)",
-                                 0);
+                                 "jbReenviarMensaje", "Reenviar mensaje (Alt+I)");
         
         jbEditarMensaje = configurarBoton("Editar mensaje",
                                  "iconos/responder_mensaje.png",
-                                 "jbEditarMensaje", "Editar mensaje (Alt+I)",
-                                 0);
+                                 "jbEditarMensaje", "Editar mensaje (Alt+I)");
         
         jbRetornarMensaje = configurarBoton("Retornar mensaje",
                                  "iconos/responder_mensaje.png",
-                                 "jbRetornarMensaje", "Retornar mensaje (Alt+I)",
-                                 0);
+                                 "jbRetornarMensaje", "Retornar mensaje (Alt+I)");
         
+        //Inserto los botones al toolbar.
         toolBar.add(jbInicio);
         sp1 = new JToolBar.Separator();
         toolBar.add(sp1);
@@ -325,14 +333,21 @@ public class MailPrincipalVista extends JFrame {
         toolBar.add(jbIrEmpresas);
     }
     
+    /**
+     * Configura un botón con los argumentos pasados.
+     * @param text Texto que tendra el botón.
+     * @param imagePath La ruta en donde se encuentra el icono para el boton.
+     * @param actionCommand Comando del botón.
+     * @param toolTipText Texto de ayuda del botón.
+     * @param mnemonic Clave de la tecla de acceso rapido para el botón.
+     * @return Retorna un objeto <code>JButton</code>
+     */
     private JButton configurarBoton (String text, String imagePath,
                                      String actionCommand,
-                                     String toolTipText,
-                                     int mnemonic) {
+                                     String toolTipText) {
         
         JButton button = new JButton (text);
         button.setFocusable(false);
-        button.setMnemonic(mnemonic);
         button.setToolTipText(toolTipText);
         button.addActionListener(controlador);
         button.setActionCommand(actionCommand);

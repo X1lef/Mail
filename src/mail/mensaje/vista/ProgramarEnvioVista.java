@@ -25,6 +25,7 @@ import javax.swing.SpinnerNumberModel;
 import mail.mensaje.controlador.ProgramarEnvioControlador;
 
 /**
+ * Clase que permite configurar un mensaje para su envío.
  * 
  * @author Félix Pedrozo
  */
@@ -32,18 +33,19 @@ public class ProgramarEnvioVista extends JDialog {
     private JSpinner jsHoraMax, jsHoraMin, jsMinutoMax, jsMinutoMin, jsIntervalo;
     private JButton jbAceptar, jbCancelar;
     private JLabel jlFechaMinMax, jlHoraMinMax, jlFrecuencia, jlIntervalo, jlDescripcion;
-    private JPanel jpBotones, jpDias, jpEnvioProg, jpOpcionesDeEnvio;
     private JCheckBox jcbD, jcbL, jcbM, jcbX, jcbJ, jcbV, jcbS;
     private JDateChooser jdcFechaMin, jdcFechaMax;
     private JComboBox <String> jcbFrecuencia;
     private JTabbedPane jTabbedPane;
+    private ProgramarEnvioControlador controlador;
     
     public ProgramarEnvioVista (JDialog padre, ProgramarEnvioControlador controlador) {
         super (padre, "Programar envío");
-        crearIU (controlador);
+        this.controlador = controlador;
+        crearIU ();
     }
     
-    private void crearIU (ProgramarEnvioControlador controlador) {
+    private void crearIU () {
         setSize (450, 250);
         setResizable(false);
         setLocationRelativeTo(null);
@@ -51,8 +53,102 @@ public class ProgramarEnvioVista extends JDialog {
         setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         
-        //Configuro los componentes para el panel jpEnvioProg.
-        jpEnvioProg = new JPanel ();
+        //Inserción de los paneles al TabbedPane.
+        jTabbedPane = new JTabbedPane();
+        jTabbedPane.add("Enviar", agregarPanelEnvioProg());
+        jTabbedPane.add("Opciones de envío", agregarPanelOpcionesDeEnvio());
+        
+        //Inserción de los componentes al Frame.
+        add (jTabbedPane);
+        add (agregarPanelBotones());
+    }
+    
+    //Configuro los componentes para el panel jpDias.
+    private JPanel agregarPanelOpcionesDeEnvio () {
+        jcbD = new JCheckBox("D", true);
+        jcbL = new JCheckBox("L", true);
+        jcbM = new JCheckBox("M", true);
+        jcbX = new JCheckBox("X", true);
+        jcbJ = new JCheckBox("J", true);
+        jcbV = new JCheckBox("V", true);
+        jcbS = new JCheckBox("S", true);
+        
+        //Por defecto las cajas de chequeo van ha estar desabilitadas.
+        habilitarDias(false);
+        
+        JPanel jpDias = new JPanel (new FlowLayout(FlowLayout.CENTER, 15, 5));
+        jpDias.setBorder(BorderFactory.createTitledBorder("Día de la semana"));
+        jpDias.add (jcbD);
+        jpDias.add (jcbL);
+        jpDias.add (jcbM);
+        jpDias.add (jcbX);
+        jpDias.add (jcbJ);
+        jpDias.add (jcbV);
+        jpDias.add (jcbS);
+        
+        //Configuro los componentes para el panel jpOpcionesEnvio.
+        JPanel jpOpcionesDeEnvio = new JPanel(new GridBagLayout());
+        GridBagConstraints restricciones = new GridBagConstraints();
+        
+        //Componente de la fila 0 columna 0.
+        restricciones.gridx = 0;
+        restricciones.gridy = 0;
+        restricciones.anchor = GridBagConstraints.WEST;
+        restricciones.insets = new Insets(10, 10, 20, 10);
+        
+        jlFrecuencia = new JLabel ("Frecuencia");
+        jpOpcionesDeEnvio.add (jlFrecuencia, restricciones);
+        
+        //Componente de la fila 0 columna 1.
+        restricciones.gridx = 1;
+        restricciones.weightx = 1.0;
+        restricciones.insets = new Insets (10, 0, 20, 10);
+        restricciones.fill = GridBagConstraints.HORIZONTAL;
+        
+        jcbFrecuencia = new JComboBox<>(new String [] {"Diaria", "Semanal", "Mensual", "Anual"});
+        jcbFrecuencia.addItemListener(controlador);
+        jpOpcionesDeEnvio.add (jcbFrecuencia, restricciones);
+        
+        //Componente de la fila 0 columna 2.
+        restricciones.gridx = 2;
+        restricciones.weightx = 0.0;
+        restricciones.fill = GridBagConstraints.NONE;
+        
+        jlIntervalo = new JLabel ("Cada");
+        jpOpcionesDeEnvio.add (jlIntervalo, restricciones);
+        
+        //Componentes de la fila 0 columna 3.
+        restricciones.gridx = 3;
+        
+        jsIntervalo = new JSpinner(new SpinnerNumberModel(1, 1, 100, 1));
+        jsIntervalo.addChangeListener(controlador);
+        jsIntervalo.setName("jsIntervalo");
+        jpOpcionesDeEnvio.add (jsIntervalo, restricciones);
+        
+        //Componente de la fila 0 columna 4.
+        restricciones.gridx = 4;
+        
+        jlDescripcion = new JLabel ("día");
+        jlDescripcion.setPreferredSize(new Dimension(50, 14));
+        jpOpcionesDeEnvio.add (jlDescripcion, restricciones);
+        
+        //Componente de la fila 1 columna 0.
+        restricciones.gridx = 0;
+        restricciones.gridy = 1;
+        restricciones.weighty = 1.0;
+        restricciones.gridwidth = 5;
+        restricciones.anchor = GridBagConstraints.NORTHWEST;
+        restricciones.fill = GridBagConstraints.HORIZONTAL;
+        restricciones.insets = new Insets(0, 10, 10, 10);
+        
+        jpOpcionesDeEnvio.add (jpDias, restricciones);
+        
+        return jpOpcionesDeEnvio;
+    }
+    
+    //Configuro los componentes para el panel jpEnvioProg.
+    private JPanel agregarPanelEnvioProg () {
+        JPanel jpEnvioProg = new JPanel ();
         jpEnvioProg.setLayout(new GridBagLayout());
         
         GridBagConstraints constraints = new GridBagConstraints ();
@@ -108,7 +204,6 @@ public class ProgramarEnvioVista extends JDialog {
         
         jpEnvioProg.add (new JLabel (":"), constraints);
         
-        //Vector para representar minutos.
         //TODO : Vector para representar a los minutos.
         String [] itemsMinutos = {
             "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10",
@@ -166,8 +261,11 @@ public class ProgramarEnvioVista extends JDialog {
         jsMinutoMin = new JSpinner(new SpinnerListModel(itemsMinutos));
         jpEnvioProg.add (jsMinutoMin, constraints);
         
-        //Configuro los componentes para el jpBotones.
-        jpBotones = new JPanel ();
+        return jpEnvioProg;
+    }
+    
+    private JPanel agregarPanelBotones () {
+        JPanel jpBotones = new JPanel ();
         jpBotones.setLayout(new BoxLayout(jpBotones, BoxLayout.X_AXIS));
         jpBotones.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         
@@ -179,93 +277,7 @@ public class ProgramarEnvioVista extends JDialog {
         jbCancelar.addActionListener(controlador);
         jpBotones.add (jbCancelar);
         
-        //Configuro los componentes para el panel jpDias.
-        jcbD = new JCheckBox("D", true);
-        jcbL = new JCheckBox("L", true);
-        jcbM = new JCheckBox("M", true);
-        jcbX = new JCheckBox("X", true);
-        jcbJ = new JCheckBox("J", true);
-        jcbV = new JCheckBox("V", true);
-        jcbS = new JCheckBox("S", true);
-        
-        //Por defecto las cajas de chequeo van ha estar desabilitadas.
-        habilitarDias(false);
-        
-        jpDias = new JPanel (new FlowLayout(FlowLayout.CENTER, 15, 5));
-        jpDias.setBorder(BorderFactory.createTitledBorder("Día de la semana"));
-        jpDias.add (jcbD);
-        jpDias.add (jcbL);
-        jpDias.add (jcbM);
-        jpDias.add (jcbX);
-        jpDias.add (jcbJ);
-        jpDias.add (jcbV);
-        jpDias.add (jcbS);
-        
-        //Configuro los componentes para el panel jpOpcionesEnvio.
-        jpOpcionesDeEnvio = new JPanel(new GridBagLayout());
-        GridBagConstraints restricciones = new GridBagConstraints();
-        
-        //Componente de la fila 0 columna 0.
-        restricciones.gridx = 0;
-        restricciones.gridy = 0;
-        restricciones.anchor = GridBagConstraints.WEST;
-        restricciones.insets = new Insets(10, 10, 20, 10);
-        
-        jlFrecuencia = new JLabel ("Frecuencia");
-        jpOpcionesDeEnvio.add (jlFrecuencia, restricciones);
-        
-        //Componente de la fila 0 columna 1.
-        restricciones.gridx = 1;
-        restricciones.weightx = 1.0;
-        restricciones.insets = new Insets (10, 0, 20, 10);
-        restricciones.fill = GridBagConstraints.HORIZONTAL;
-        
-        jcbFrecuencia = new JComboBox<>(new String [] {"Diaria", "Semanal", "Mensual", "Anual"});
-        jcbFrecuencia.addItemListener(controlador);
-        jpOpcionesDeEnvio.add (jcbFrecuencia, restricciones);
-        
-        //Componente de la fila 0 columna 2.
-        restricciones.gridx = 2;
-        restricciones.weightx = 0.0;
-        restricciones.fill = GridBagConstraints.NONE;
-        
-        jlIntervalo = new JLabel ("Cada");
-        jpOpcionesDeEnvio.add (jlIntervalo, restricciones);
-        
-        //Componentes de la fila 0 columna 3.
-        restricciones.gridx = 3;
-        
-        jsIntervalo = new JSpinner(new SpinnerNumberModel(1, 1, 100, 1));
-        jsIntervalo.addChangeListener(controlador);
-        jsIntervalo.setName("jsIntervalo");
-        jpOpcionesDeEnvio.add (jsIntervalo, restricciones);
-        
-        //Componente de la fila 0 columna 4.
-        restricciones.gridx = 4;
-        
-        jlDescripcion = new JLabel ("día");
-        jlDescripcion.setPreferredSize(new Dimension(50, 14));
-        jpOpcionesDeEnvio.add (jlDescripcion, restricciones);
-        
-        //Componente de la fila 1 columna 0.
-        restricciones.gridx = 0;
-        restricciones.gridy = 1;
-        restricciones.weighty = 1.0;
-        restricciones.gridwidth = 5;
-        restricciones.anchor = GridBagConstraints.NORTHWEST;
-        restricciones.fill = GridBagConstraints.HORIZONTAL;
-        restricciones.insets = new Insets(0, 10, 10, 10);
-        
-        jpOpcionesDeEnvio.add (jpDias, restricciones);
-        
-        //Inserción de los paneles al TabbedPane.
-        jTabbedPane = new JTabbedPane();
-        jTabbedPane.add("Enviar", jpEnvioProg);
-        jTabbedPane.add("Opciones de envío", jpOpcionesDeEnvio);
-        
-        //Inserción de los componentes al Frame.
-        add (jTabbedPane);
-        add (jpBotones);
+        return jpBotones;
     }
     
     public void actualizarPorCantidad (int cantidad, String singular, String plural) {

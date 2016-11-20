@@ -13,6 +13,7 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -22,6 +23,8 @@ import javax.swing.JTextField;
 import mail.mensaje.controlador.OperacionContactoControlador;
 
 /**
+ * Clase que permitira realizar operaciones con los contactos.
+ * 
  * @author Félix Pedrozo
  */
 public class OperacionesDeContactoVista extends JDialog {
@@ -29,16 +32,17 @@ public class OperacionesDeContactoVista extends JDialog {
     private JTextField jtfNombre, jtfApellido, jtfEmail, jtfBuscar;
     private JComboBox <String> jcbEmpresa;
     private JButton jbIngresarEmpresa, jbGuardar, jbCancelar, jbBuscar, jbEliminar;
-    private JPanel jpABM, jpBuscar, jpBotones, jpConsulta;
     private JRadioButton jrbNombre, jrbApellido, jrbEmail, jrbEmpresa;
     private JTabbedPane jTabbedPane;
     private JTable jtContacto;
     private JScrollPane jspTablaContacto;
+    private OperacionContactoControlador controlador;
 
     public OperacionesDeContactoVista (JFrame frame, int indice,
             OperacionContactoControlador controlador) {
         super (frame, "Contactos");
-        crearIU (indice, controlador);
+        this.controlador = controlador;
+        crearIU (indice);
     }
     
     public OperacionesDeContactoVista (JFrame frame, 
@@ -49,7 +53,8 @@ public class OperacionesDeContactoVista extends JDialog {
     public OperacionesDeContactoVista (JDialog dialog, int indice,
                 OperacionContactoControlador controlador) {
         super (dialog, "Contactos");
-        crearIU (indice, controlador);
+        this.controlador = controlador;
+        crearIU (indice);
     }
     
     public OperacionesDeContactoVista (JDialog dialog,
@@ -57,14 +62,26 @@ public class OperacionesDeContactoVista extends JDialog {
         this (dialog, 0, controlador);
     }
     
-    private void crearIU (int indice, OperacionContactoControlador controlador) {
+    private void crearIU (int indexTab) {
         setModal(true);
         setSize(570, 450);
         setLocationRelativeTo(null);
         setLayout(new GridLayout(1, 0));
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
-        //Configuro los componentes para el panel jpBotones.
+        //Inserto los paneles al TabbedPane.
+        jTabbedPane = new JTabbedPane();
+        jTabbedPane.add ("ABM", agregarPanelABM());
+        jTabbedPane.add ("Consulta", agregarPanelConsulta());
+        //Le indico el indice de la pestaña que se mostrara.
+        jTabbedPane.setSelectedIndex(indexTab);
+
+        //Inserto al Dialog el TabbedPane.
+        add (jTabbedPane);
+    }
+    
+    //Configuro los componentes para el panel jpBotones.
+    private JPanel agregarPanelBotones () {
         jbGuardar = new JButton ("Guardar");
         jbGuardar.setActionCommand("jbGuardar");
         jbGuardar.addActionListener(controlador);
@@ -78,15 +95,121 @@ public class OperacionesDeContactoVista extends JDialog {
         jbCancelar.setActionCommand("jbCancelar");
         jbCancelar.addActionListener(controlador);
 
-        jpBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
+        JPanel jpBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
         jpBotones.add (jbGuardar);
         jpBotones.add (jbEliminar);
         jpBotones.add (jbCancelar);
+        
+        return jpBotones;
+    }
+    
+    private JPanel agregarPanelConsulta () {
+         JPanel jpConsulta = new JPanel(new GridBagLayout());
+         
+         GridBagConstraints constraints = new GridBagConstraints();
 
-        //Configuro los componentes para el panel jpABM.
-        jpABM = new JPanel (new GridBagLayout());
+        //Componente de la fila 0 columna 0.
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.weightx = 1.0;
+        constraints.insets = new Insets(10, 10, 10, 10);
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+
+        jpConsulta.add (agregarPanelBuscar(), constraints);
+
+        //Componente de la fila 1 columna 0.
+        constraints.gridy = 1;
+        constraints.weighty = 1.0;
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.insets = new Insets (0, 10, 10,10);
+
+        jtContacto = new JTable(new DefaultTableModel(
+                new String [] {"Nombre", "Apellido", "Email", "Empresa"},
+                5
+        ));
+        jspTablaContacto = new JScrollPane(jtContacto);
+        jpConsulta.add (jspTablaContacto, constraints);
+        
+        return jpConsulta;
+    }
+    
+    private JPanel agregarPanelBuscar () {
+        //Configuro los componentes del panel jpConsulta.
+        JPanel jpBuscar = new JPanel(new GridBagLayout());
+        jpBuscar.setBorder (BorderFactory.createEtchedBorder());
+        
+        GridBagConstraints constraints = new GridBagConstraints();
+
+        //Componente de la fila 0 columna 0.
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.gridwidth = 4;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.anchor = GridBagConstraints.WEST;
+        constraints.insets = new Insets(10, 20, 10, 10);
+
+        jtfBuscar = new JTextField(25);
+        jpBuscar.add (jtfBuscar, constraints);
+
+        //Componente de la fila 0 columna 4.
+        constraints.gridx = 4;
+        constraints.gridwidth = 1;
+        constraints.insets = new Insets(10, 0, 10, 10);
+
+        jbBuscar = new JButton("Buscar");
+        jbBuscar.setActionCommand("jbBuscar");
+        jbBuscar.addActionListener(controlador);
+        constraints.fill = GridBagConstraints.NONE;
+        jpBuscar.add (jbBuscar, constraints);
+
+        //Componente de la fila 1 columna 0.
+        constraints.gridx = 0;
+        constraints.gridy = 1;
+        constraints.weightx = 1.0;
+        constraints.insets = new Insets(0, 20, 10, 20);
+
+        jlFiltrar = new JLabel("Filtrar por :");
+        jpBuscar.add (jlFiltrar, constraints);
+
+        ButtonGroup buttonGroup = new ButtonGroup();
+
+        //Componente de la fila 1 columna 1.
+        constraints.gridx = 1;
+        constraints.insets = new Insets(0, 0, 10, 20);
+
+        jrbNombre = new JRadioButton("Nombre", true);
+        buttonGroup.add (jrbNombre);
+        jpBuscar.add (jrbNombre, constraints);
+
+        //Componente de la fila 1 columna 2.
+        constraints.gridx = 2;
+
+        jrbApellido = new JRadioButton("Apellido");
+        buttonGroup.add (jrbApellido);
+        jpBuscar.add (jrbApellido, constraints);
+
+        //Componente de la fila 1 columna 3.
+        constraints.gridx = 3;
+
+        jrbEmail = new JRadioButton("Email");
+        buttonGroup.add (jrbEmail);
+        jpBuscar.add (jrbEmail, constraints);
+
+        //Componente de la fila 1 columna 4.
+        constraints.gridx = 4;
+
+        jrbEmpresa = new JRadioButton("Empresa");
+        buttonGroup.add (jrbEmpresa);
+        jpBuscar.add (jrbEmpresa, constraints);
+        
+        return jpBuscar;
+    }
+    
+    private JPanel agregarPanelABM () {
+         JPanel jpABM = new JPanel (new GridBagLayout());
 
         GridBagConstraints constraints = new GridBagConstraints();
+        
         //Componente de la fila 0 columna 0.
         constraints.gridx = 0;
         constraints.gridy = 0;
@@ -168,105 +291,27 @@ public class OperacionesDeContactoVista extends JDialog {
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.insets = new Insets(0, 0, 0, 0);
 
-        jpABM.add (jpBotones, constraints);
+        jpABM.add (agregarPanelBotones(), constraints);
 
-        //Configuro los componentes del panel jpConsulta.
-        jpBuscar = new JPanel(new GridBagLayout());
-        jpBuscar.setBorder (BorderFactory.createEtchedBorder());
-
-        //Componente de la fila 0 columna 0.
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.weighty = 0.0;
-        constraints.gridwidth = 4;
-        constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.anchor = GridBagConstraints.WEST;
-        constraints.insets = new Insets(10, 20, 10, 10);
-
-        jtfBuscar = new JTextField(25);
-        jpBuscar.add (jtfBuscar, constraints);
-
-        //Componente de la fila 0 columna 4.
-        constraints.gridx = 4;
-        constraints.gridwidth = 1;
-        constraints.insets = new Insets(10, 0, 10, 10);
-
-        jbBuscar = new JButton("Buscar");
-        constraints.fill = GridBagConstraints.NONE;
-        jpBuscar.add (jbBuscar, constraints);
-
-        //Componente de la fila 1 columna 0.
-        constraints.gridx = 0;
-        constraints.gridy = 1;
-        constraints.weightx = 1.0;
-        constraints.insets = new Insets(0, 20, 10, 20);
-
-        jlFiltrar = new JLabel("Filtrar por :");
-        jpBuscar.add (jlFiltrar, constraints);
-
-        ButtonGroup buttonGroup = new ButtonGroup();
-
-        //Componente de la fila 1 columna 1.
-        constraints.gridx = 1;
-        constraints.insets = new Insets(0, 0, 10, 20);
-
-        jrbNombre = new JRadioButton("Nombre", true);
-        buttonGroup.add (jrbNombre);
-        jpBuscar.add (jrbNombre, constraints);
-
-        //Componente de la fila 1 columna 2.
-        constraints.gridx = 2;
-
-        jrbApellido = new JRadioButton("Apellido");
-        buttonGroup.add (jrbApellido);
-        jpBuscar.add (jrbApellido, constraints);
-
-        //Componente de la fila 1 columna 3.
-        constraints.gridx = 3;
-
-        jrbEmail = new JRadioButton("Email");
-        buttonGroup.add (jrbEmail);
-        jpBuscar.add (jrbEmail, constraints);
-
-        //Componente de la fila 1 columna 4.
-        constraints.gridx = 4;
-
-        jrbEmpresa = new JRadioButton("Empresa");
-        buttonGroup.add (jrbEmpresa);
-        jpBuscar.add (jrbEmpresa, constraints);
-
-        //Configuro los componentes para el panel jpConsulta.
-        jpConsulta = new JPanel(new GridBagLayout());
-
-        //Componente de la fila 0 columna 0.
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.insets = new Insets(10, 10, 10, 10);
-        constraints.fill = GridBagConstraints.HORIZONTAL;
-
-        jpConsulta.add (jpBuscar, constraints);
-
-        //Componente de la fila 1 columna 0.
-        constraints.gridy = 1;
-        constraints.weighty = 1.0;
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.insets = new Insets (0, 10, 10,10);
-
-        jtContacto = new JTable(new DefaultTableModel(
-                new String [] {"Nombre", "Apellido", "Email", "Empresa"},
-                5
-        ));
-        jspTablaContacto = new JScrollPane(jtContacto);
-        jpConsulta.add (jspTablaContacto, constraints);
-
-        //Inserto los paneles al TabbedPane.
-        jTabbedPane = new JTabbedPane();
-        jTabbedPane.add ("ABM", jpABM);
-        jTabbedPane.add ("Consulta", jpConsulta);
-        //Le indico el indice de la pestaña que se mostrara.
-        jTabbedPane.setSelectedIndex(indice);
-
-        //Inserto al Dialog el TabbedPane.
-        add (jTabbedPane);
+        return jpABM;
+    }
+    
+    public boolean estaVacio (int indexTab) {
+        if (indexTab == 1)
+            return (jtfNombre.getText().trim().isEmpty() || 
+                    jtfApellido.getText().trim().isEmpty() ||
+                    jtfEmail.getText().trim().isEmpty());
+        else
+            return jtfBuscar.getText().trim().isEmpty();
+    }
+    
+    public void mostrarMensaje (String m, int tipoMensaje) {
+        JOptionPane.showMessageDialog(this, m, "Aviso", tipoMensaje);
+    }
+    
+    public void limpiarCampos () {
+        jtfNombre.setText(null);
+        jtfApellido.setText(null);
+        jtfEmail.setText(null);
     }
 }

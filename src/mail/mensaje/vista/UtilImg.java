@@ -4,21 +4,26 @@ import java.net.URL;
 import javax.swing.ImageIcon;
 
 /**
+ * Clase que sirve para realizar operaciones con las imagenes.
+ * 
  * @author Félix Pedrozo.
  */
 public class UtilImg {
     //Extensiones de las imagenes.
-    protected final static String JPG = ".jpg",
-                                  JPEG = ".jpeg",
-                                  GIF = ".gif",
-                                  PNG = ".png";
+    final static String JPG = ".jpg",
+                        JPEG = ".jpeg",
+                        GIF = ".gif",
+                        PNG = ".png";
     
+    /**
+     * @param path Ruta en la que se encuentra la imagen.
+     * @return Devuelve un objeto <code>ImageIcon</code>
+     */
     protected static ImageIcon createImageIcon (String path) {
         URL imgURL = UtilImg.class.getResource(path);
-        if (imgURL != null)
+        if (imgURL != null) 
             return new ImageIcon(imgURL);
-        else
-            return null;
+        else 
+            throw new NullPointerException();
     }
-    
 }
