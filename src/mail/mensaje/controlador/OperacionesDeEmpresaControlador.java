@@ -2,53 +2,132 @@ package mail.mensaje.controlador;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.List;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
+import mail.mensaje.modelo.dao.EmpresaDAO;
 import mail.mensaje.vista.OperacionesDeEmpresaVista;
+import javax.swing.JTable;
+import static javax.swing.JOptionPane.*;
+import mail.mensaje.modelo.vo.Empresa;
+import static mail.mensaje.vista.OperacionesDeEmpresaVista.actualizar_eliminar;
 
 /**
  *
  * @author Fèlix Pedrozo
  */
-public class OperacionesDeEmpresaControlador implements ActionListener {
+public class OperacionesDeEmpresaControlador extends MouseAdapter implements ActionListener {
     private OperacionesDeEmpresaVista vista;
+    private EmpresaDAO modelo;
+    private int indexFila;
     
     public OperacionesDeEmpresaControlador (JDialog dialog) {
         vista = new OperacionesDeEmpresaVista (dialog, this);
         vista.setVisible(true);
     }
     public OperacionesDeEmpresaControlador (JFrame frame) {
-        vista = new OperacionesDeEmpresaVista (frame, this);
-        vista.setVisible(true);
+        this(frame, 0);
     }
     public OperacionesDeEmpresaControlador (JFrame frame, int intervalo) {
+        modelo = new EmpresaDAO();
         vista = new OperacionesDeEmpresaVista (frame, intervalo, this);
         vista.setVisible(true);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        switch (e.getActionCommand()) {
+        String command = e.getActionCommand();
+        
+        switch (command) {
             case "jbCancelar" :
-                vista.dispose();
+                actualizar_eliminar = false;
+                vista.limpiarCampos();
+                vista.configurarBotones(false, "Guardar");
                 break;
-             case "jbGuardar" :
-                if (vista.estaVacio(1))
-                    vista.mostrarMensaje("Los campos no deben estar vacíos", 
-                            JOptionPane.ERROR_MESSAGE);
-                else {
-                    vista.limpiarCampos();
-                    vista.mostrarMensaje("Se ha guardado la empresa correctamente",
-                            JOptionPane.INFORMATION_MESSAGE);
-                }
-                break;
+                
             case "jbBuscar" :
                 if (vista.estaVacio(2))
-                    vista.mostrarMensaje("El campo de busqueda no debe estar vacío", 
-                            JOptionPane.ERROR_MESSAGE);
-            //TODO : Aqui debe buscar referente al atributo que puso en el campo de buscar en la bd.    
+                    vista.mostrarMensaje("El campo de busqueda no debe estar vacío", ERROR_MESSAGE);
+                
+                else {
+                    vista.cargarTablaNuevaInfo(buscarRegistro());
+                }
+                break;
+                
+            case "jbMostrarTodo" :
+                //TODO : Me falta el botón mostrar todo.
+                break;
+                
+            default :
+                //Valido los datos.
+                if (vista.estaVacio(1)) {
+                     vista.mostrarMensaje("Los campos no deben estar vacíos", ERROR_MESSAGE);
+                     return;
+                
+                //Bloque de codigo para eliminar registro.
+                } else if (command.equals ("jbEliminar")) {
+                    modelo.eliminarEmpresa(vista.listEmpresa.get(indexFila).getId());
+                    vista.mostrarMensaje ("Se ha eliminado la empresa correctamente.", INFORMATION_MESSAGE);
+                    actualizar_eliminar = false;
+                    vista.configurarBotones(false, "Guardar");
+                    
+                //Bloque de codigo para actualizar y insertar.
+                } else {
+                    //Actualizar registro.
+                    if (actualizar_eliminar) {
+                        modelo.actualizarEmpresa(vista.guardarDatos());
+                        vista.mostrarMensaje("Se ha actualizado la empresa correctamente", INFORMATION_MESSAGE);
+                        vista.configurarBotones(false, "Guardar");
+                        actualizar_eliminar = false;
+                    
+                    //Insertar registro.
+                    } else {
+                        modelo.insertarEmpresa(vista.guardarDatos());
+                        vista.mostrarMensaje("Se ha guardado la empresa correctamente", INFORMATION_MESSAGE);
+                    }
+                }
+                //Actualizo la vista.
+                vista.limpiarCampos();
+                vista.cargarTabla();
+                break;
         }
     }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        if (e.getClickCount() == 2) {
+            //Guardo la fila seleccionada.
+            indexFila = ((JTable)e.getSource()).getSelectedRow();
+            //Activado para poder eliminar o actualizar.
+            actualizar_eliminar = true;
+            //Activo los botones eliminar y actualizar.
+            vista.configurarBotones(true, "Actualizar");
+            vista.cargarDatos(indexFila);
+        }
+    }
+    
+    private List <Empresa> buscarRegistro () {
+        final String where;
+        
+        switch(vista.radioButtonSeleccionado()) {
+            //Selecciono email.
+            case "Email" :
+                where = "WHERE UPPER(email) LIKE UPPER(CONCAT(?, '%'))";
+                break;
+               
+            //Selecciono empresa.    
+            default:
+                //TODO : Probar porque no me sale la consulta.
+                 where = "WHERE UPPER(nombre) LIKE UPPER(CONCAT(?, '%'))"; 
+                 break;
+        }
+        
+        return modelo.obtenerContacto(where, vista.buscarRegistro());
+    }
+    
+    
+    
     
 }

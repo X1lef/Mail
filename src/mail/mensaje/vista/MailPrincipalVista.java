@@ -1,6 +1,7 @@
 package mail.mensaje.vista;
 
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -35,7 +36,7 @@ import mail.mensaje.controlador.MailControlador;
  */
 public class MailPrincipalVista extends JFrame {
     private JTree jTree;
-    private JTable jtMensajes;
+    private JTable jtMensajes, jtMensRecibido, jtMensProg, jtMensEnviados;
     private JScrollPane jspMenPane, jspTablaMensaje;
     private JLabel jlConexion, jlCantMensajes;
     private JMenuBar menuBar;
@@ -56,6 +57,49 @@ public class MailPrincipalVista extends JFrame {
     public MailPrincipalVista (MailControlador controlador) {
         this.controlador = controlador;
         crearIU ();
+    }
+    
+    /**
+     * Determina cuál de los botones del ToolBar será visible dependiendo de los valores
+     * de los argumentos pasados.
+     * @param act1 Activa u desactiva los botones Ingresar contacto, Ingresar empresa y Consultar contactos.
+     * @param act2 Activa u desactiva el botón Reenviar mensaje.
+     * @param act3 Activa u desactiva el botón eliminar mensaje.
+     * @param act4 Activa u desactiva el botón editar mensaje.
+     * @param act5 Activa u desactiva el botón retornar mensaje.
+     * @param act6 Activa u desactiva el botón responder a todos.
+     */
+    public void activarVisibilidad (boolean act1, boolean act2, boolean act3, boolean act4, boolean act5, boolean act6) {
+        jbIngresarContacto.setVisible(act1);
+        jbIngresarEmpresa.setVisible(act1);
+        jbIrEmpresas.setVisible(act1);
+        jbIrContactos.setVisible(act1);
+        sp2.setVisible(act1);
+        
+        jbReenviarMensaje.setVisible(act2);
+        jbEliminarMensaje.setVisible(act3);
+        jbEditarMensaje.setVisible(act4);
+        jbRetornarMensaje.setVisible(act5);
+        
+        jbResponder.setVisible(act6);
+        jbResponderTodos.setVisible(act6);
+    }
+    
+    /**
+     * Permite acceder a la referencia del objeto de instancia <code>JTree</code>
+     * @return Devuelve la referencia de un objeto <code>JTree</code>.
+     */
+    public JTree getTree () {
+        return jTree;
+    }
+    
+    public void setLookAndFeel (String className) {
+        try {
+            UIManager.setLookAndFeel(className);
+            SwingUtilities.updateComponentTreeUI(this);
+        }catch (Exception ex) {
+            setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+        }
     }
     
     /**
@@ -187,49 +231,6 @@ public class MailPrincipalVista extends JFrame {
     }
     
     /**
-     * Determina cuál de los botones del ToolBar será visible dependiendo de los valores
-     * de los argumentos pasados.
-     * @param act1 Activa u desactiva los botones Ingresar contacto, Ingresar empresa y Consultar contactos.
-     * @param act2 Activa u desactiva el botón Reenviar mensaje.
-     * @param act3 Activa u desactiva el botón eliminar mensaje.
-     * @param act4 Activa u desactiva el botón editar mensaje.
-     * @param act5 Activa u desactiva el botón retornar mensaje.
-     * @param act6 Activa u desactiva el botón responder a todos.
-     */
-    public void activarVisibilidad (boolean act1, boolean act2, boolean act3, boolean act4, boolean act5, boolean act6) {
-        jbIngresarContacto.setVisible(act1);
-        jbIngresarEmpresa.setVisible(act1);
-        jbIrEmpresas.setVisible(act1);
-        jbIrContactos.setVisible(act1);
-        sp2.setVisible(act1);
-        
-        jbReenviarMensaje.setVisible(act2);
-        jbEliminarMensaje.setVisible(act3);
-        jbEditarMensaje.setVisible(act4);
-        jbRetornarMensaje.setVisible(act5);
-        
-        jbResponder.setVisible(act6);
-        jbResponderTodos.setVisible(act6);
-    }
-    
-    /**
-     * Permite acceder a la referencia del objeto de instancia <code>JTree</code>
-     * @return Devuelve la referencia de un objeto <code>JTree</code>.
-     */
-    public JTree getTree () {
-        return jTree;
-    }
-    
-    public void setLookAndFeel (String className) {
-        try {
-            UIManager.setLookAndFeel(className);
-            SwingUtilities.updateComponentTreeUI(this);
-        }catch (Exception ex) {
-            setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-        }
-    }
-    
-    /**
      * Insertara los nodos secundarios al nodo principal.
      * @param topNode Contiene la referencia del nodo principal.
      */
@@ -354,5 +355,44 @@ public class MailPrincipalVista extends JFrame {
         button.setIcon(UtilImg.createImageIcon (imagePath));
         
         return button;
+    }
+    
+    //TODO : Metodo incompleto.
+    private JPanel panelMensEnviados () {
+        //Creacion de la tabla jtMensProg.
+        jtMensProg = new JTable (new DefaultTableModel(
+                new String [] {"Estado", "Para", "Asunto", "Culminado", "Fecha y hora"},
+                0
+        ));
+        //Creacion de la tabla jtMensEnviados.
+        jtMensEnviados = new JTable (new DefaultTableModel (
+                new String [] {"Para", "Asunto", "Fecha y hora"},
+                0
+        ));
+        
+        //Creacion de la barra de herramientas.
+        JToolBar jtbTipoMensRecibido = new JToolBar();
+        jtbTipoMensRecibido.add (new JButton("Mensaje normal"));
+        jtbTipoMensRecibido.add (new JButton("Mensaje programado"));
+        
+        JPanel jpTipoMensj = new JPanel (new CardLayout());
+        jpTipoMensj.add ("mensajeNormal", jtMensEnviados);
+        jpTipoMensj.add ("mensajeProg", jtMensProg);
+        
+        JPanel jpMensRecibido = new JPanel (new BorderLayout());
+        jpMensRecibido.add(jtbTipoMensRecibido, BorderLayout.NORTH);
+        jpMensRecibido.add(jpTipoMensj, BorderLayout.CENTER);
+        
+        return jpMensRecibido;
+    }
+    
+    
+    //TODO : Metodo incompleto.git s
+    private JPanel panelMensRecibidos () {
+        jtMensRecibido = new JTable (new DefaultTableModel(
+                new String [] {"De", "Asunto", "Fecha y hora"},
+                0
+        ));
+        return null;
     }
 }

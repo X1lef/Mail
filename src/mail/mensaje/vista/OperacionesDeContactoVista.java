@@ -5,6 +5,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.util.List;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -21,6 +22,10 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import mail.mensaje.controlador.OperacionContactoControlador;
+import mail.mensaje.modelo.dao.ContactoDAO;
+import mail.mensaje.modelo.dao.EmpresaDAO;
+import mail.mensaje.modelo.vo.Contacto;
+import mail.mensaje.modelo.vo.Empresa;
 
 /**
  * Clase que permitira realizar operaciones con los contactos.
@@ -28,21 +33,27 @@ import mail.mensaje.controlador.OperacionContactoControlador;
  * @author Félix Pedrozo
  */
 public class OperacionesDeContactoVista extends JDialog {
-    private JLabel jlNombre, jlApellido, jlEmail, jlEmpresa, jlFiltrar;
+    private JLabel jlNombre, jlApellido, jlEmail, jlEmpresa, jlFiltrar, jlTotalContactos;
     private JTextField jtfNombre, jtfApellido, jtfEmail, jtfBuscar;
-    private JComboBox <String> jcbEmpresa;
+    private JComboBox <Empresa> jcbEmpresa;
     private JButton jbIngresarEmpresa, jbGuardar, jbCancelar, jbBuscar, jbEliminar;
     private JRadioButton jrbNombre, jrbApellido, jrbEmail, jrbEmpresa;
     private JTabbedPane jTabbedPane;
     private JTable jtContacto;
     private JScrollPane jspTablaContacto;
+    public List<Contacto> listContacto;
     private OperacionContactoControlador controlador;
+    public static boolean actualizar_eliminar = false;
 
     public OperacionesDeContactoVista (JFrame frame, int indice,
             OperacionContactoControlador controlador) {
         super (frame, "Contactos");
         this.controlador = controlador;
         crearIU (indice);
+        
+        //Cargo los componentes de la vista.
+        cargarComboBox();
+        cargarTablaTodosLosContactos();
     }
     
     public OperacionesDeContactoVista (JFrame frame, 
@@ -55,6 +66,10 @@ public class OperacionesDeContactoVista extends JDialog {
         super (dialog, "Contactos");
         this.controlador = controlador;
         crearIU (indice);
+        
+        //Cargo los componentes de la vista.
+        cargarComboBox();
+        cargarTablaTodosLosContactos();
     }
     
     public OperacionesDeContactoVista (JDialog dialog,
@@ -82,18 +97,20 @@ public class OperacionesDeContactoVista extends JDialog {
     
     //Configuro los componentes para el panel jpBotones.
     private JPanel agregarPanelBotones () {
-        jbGuardar = new JButton ("Guardar");
+        jbGuardar = new JButton ();
         jbGuardar.setActionCommand("jbGuardar");
         jbGuardar.addActionListener(controlador);
         
         jbEliminar = new JButton ("Eliminar");
-        jbEliminar.setEnabled(false);
         jbEliminar.setActionCommand("jbEliminar");
         jbEliminar.addActionListener(controlador);
         
         jbCancelar = new JButton ("Cancelar");
         jbCancelar.setActionCommand("jbCancelar");
         jbCancelar.addActionListener(controlador);
+        
+        //Desabilito los botones cancelar y eliminar.
+        configurarBotones(false, "Guardar");
 
         JPanel jpBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
         jpBotones.add (jbGuardar);
@@ -106,29 +123,44 @@ public class OperacionesDeContactoVista extends JDialog {
     private JPanel agregarPanelConsulta () {
          JPanel jpConsulta = new JPanel(new GridBagLayout());
          
-         GridBagConstraints constraints = new GridBagConstraints();
+         GridBagConstraints conf = new GridBagConstraints();
 
         //Componente de la fila 0 columna 0.
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.weightx = 1.0;
-        constraints.insets = new Insets(10, 10, 10, 10);
-        constraints.fill = GridBagConstraints.HORIZONTAL;
+        conf.gridx = 0;
+        conf.gridy = 0;
+        conf.weightx = 1.0;
+        conf.insets = new Insets(10, 10, 10, 10);
+        conf.fill = GridBagConstraints.HORIZONTAL;
 
-        jpConsulta.add (agregarPanelBuscar(), constraints);
+        jpConsulta.add (agregarPanelBuscar(), conf);
 
         //Componente de la fila 1 columna 0.
-        constraints.gridy = 1;
-        constraints.weighty = 1.0;
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.insets = new Insets (0, 10, 10,10);
+        conf.gridy = 1;
+        conf.weighty = 1.0;
+        conf.fill = GridBagConstraints.BOTH;
+        conf.insets = new Insets (0, 10, 5,10);
 
-        jtContacto = new JTable(new DefaultTableModel(
-                new String [] {"Nombre", "Apellido", "Email", "Empresa"},
-                5
-        ));
+        String [] colums = {"Nombre", "Apellido", "Email", "Empresa"};
+        jtContacto = new JTable(new DefaultTableModel(colums, 0) {
+             @Override
+             public boolean isCellEditable(int row, int column) {
+                 return false;
+             }
+            
+        });
+        jtContacto.addMouseListener(controlador);
         jspTablaContacto = new JScrollPane(jtContacto);
-        jpConsulta.add (jspTablaContacto, constraints);
+        jpConsulta.add (jspTablaContacto, conf);
+        
+        //Componente de la fila 2 columna 0.
+        conf.gridy = 2;
+        conf.weightx = conf.weighty = 0.0;
+        conf.fill = GridBagConstraints.NONE;
+        conf.anchor = GridBagConstraints.WEST;
+        conf.insets = new Insets(0, 10, 3, 0);
+        
+        jlTotalContactos = new JLabel(UtilImg.createImageIcon("iconos\\contacto.png"));
+        jpConsulta.add(jlTotalContactos, conf);
         
         return jpConsulta;
     }
@@ -267,8 +299,7 @@ public class OperacionesDeContactoVista extends JDialog {
         constraints.gridwidth = 1;
         constraints.insets = new Insets(0, 0, 10, 10);
 
-        //TODO : Items de prueba.
-        jcbEmpresa = new JComboBox<>(new String [] {"Axe", "Rexona", "Nivea"});
+        jcbEmpresa = new JComboBox<>();
         jpABM.add (jcbEmpresa, constraints);
 
         //Componente de la fila 3 columna 2.
@@ -313,5 +344,99 @@ public class OperacionesDeContactoVista extends JDialog {
         jtfNombre.setText(null);
         jtfApellido.setText(null);
         jtfEmail.setText(null);
+        jcbEmpresa.setSelectedIndex(0);
+    }
+    
+    public void cargarComboBox () {
+        List <Empresa> list = new EmpresaDAO ().todasLasEmpresas();
+        
+        for (Empresa empresa : list)
+            jcbEmpresa.addItem(empresa);
+    }
+    
+    public void cargarTablaTodosLosContactos () {
+        //Carga la tabla con todos los registros de los contactos.
+        cargarTablaNuevaInfo(new ContactoDAO().todosLosContacto());
+        ponerTotalDeContactos ();
+    }
+    
+    public void cargarTablaNuevaInfo (List <Contacto> list) {
+        limpiarTabla();
+        
+        if (list.size() > 0) {
+            //Guardo la lista.
+            listContacto = list;
+            
+            //Obtengo el modelo de la tabla.
+            DefaultTableModel modelo = (DefaultTableModel)jtContacto.getModel();
+
+            //Inserto las filas.
+            for (Contacto contacto : listContacto)
+                modelo.addRow (contacto.toArray());
+
+            //Actualizar tabla.
+            jtContacto.updateUI();
+        }
+    }
+    
+    public void cargarDatos (int indexFila) {
+        Contacto contacto = listContacto.get(indexFila);
+        
+        //Inserto los datos a los componentes.
+        jtfNombre.setText(contacto.getNombre());
+        jtfApellido.setText(contacto.getApellido());
+        jtfEmail.setText(contacto.getEmail());
+        jcbEmpresa.setSelectedItem(contacto.getEmpresa());
+        
+        jTabbedPane.setSelectedIndex(0);
+    }
+    
+    private void limpiarTabla () {
+        //Le inicializo la cantidad de filas a cero.
+        if (jtContacto.getRowCount() != 0)
+            ((DefaultTableModel)jtContacto.getModel()).setNumRows(0);
+    }
+    
+    public Contacto guardarDatos () {
+        Contacto contacto = new Contacto ();
+        
+        if (actualizar_eliminar)
+            contacto.setId(listContacto.get(jtContacto.getSelectedRow()).getId());
+        
+        //Cargo el objeto contacto.
+        contacto.setNombre(jtfNombre.getText());
+        contacto.setApellido(jtfApellido.getText());
+        contacto.setEmail(jtfEmail.getText());
+        contacto.setEmpresa((Empresa)jcbEmpresa.getSelectedItem());
+        
+        //Retorna los datos de la cargados.
+        return contacto;
+    }
+    
+    public void configurarBotones (boolean estado, String text) {
+        //Cambiar texto de botón.
+        jbGuardar.setText(text);
+        
+        jbEliminar.setEnabled(estado);
+        jbCancelar.setEnabled(estado);
+    }
+    
+    public String radioButtonSeleccionado () {
+        if (jrbNombre.isSelected())
+            return jrbNombre.getText();
+        else if (jrbApellido.isSelected())
+            return jrbApellido.getText();
+        else if (jrbEmail.isSelected())
+            return jrbEmail.getText();
+        
+        return jrbEmpresa.getText();
+    }
+    
+    public String buscarRegistro () {
+        return jtfBuscar.getText();
+    }
+    
+    private void ponerTotalDeContactos () {
+        jlTotalContactos.setText("Total de contactos : " + jtContacto.getRowCount());
     }
 }

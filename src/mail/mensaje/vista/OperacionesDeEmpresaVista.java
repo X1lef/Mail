@@ -5,6 +5,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -20,6 +21,8 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import mail.mensaje.controlador.OperacionesDeEmpresaControlador;
+import mail.mensaje.modelo.dao.EmpresaDAO;
+import mail.mensaje.modelo.vo.Empresa;
 
 /**
  * Clase que permitira realizar operaciones con las empresas.
@@ -27,13 +30,15 @@ import mail.mensaje.controlador.OperacionesDeEmpresaControlador;
  * @author Félix Pedrozo
  */
 public class OperacionesDeEmpresaVista extends JDialog {
-    private JLabel jlEmail, jlEmpresa, jlDireccion, jlFiltrar;
+    private JLabel jlEmail, jlEmpresa, jlDireccion, jlFiltrar, jlTotalEmpresa;
     private JTextField jtfEmpresa, jtfDireccion, jtfEmail, jtfBuscar;
     private JButton jbGuardar, jbCancelar, jbBuscar, jbEliminar;
     private JRadioButton jrbEmpresa, jrbEmail;
     private JTabbedPane jTabbedPane;
     private JTable jtEmpresa;
     private JScrollPane jspTablaEmpresa;
+    public List <Empresa> listEmpresa;
+    public static boolean actualizar_eliminar = false;
     private OperacionesDeEmpresaControlador controlador;
 
     public OperacionesDeEmpresaVista (JFrame frame, int indexTab,
@@ -42,6 +47,9 @@ public class OperacionesDeEmpresaVista extends JDialog {
         //Obtengo la referencia del controlador.
         this.controlador = controlador;
         crearIU (indexTab);
+        
+        //Cargo tabla.
+        cargarTabla();
     }
     
     public OperacionesDeEmpresaVista (JFrame frame,
@@ -55,6 +63,9 @@ public class OperacionesDeEmpresaVista extends JDialog {
         //Obtengo la referencia del controlador.
         this.controlador = controlador;
         crearIU (indexTab);
+        
+        //Cargar tabla.
+        cargarTabla();
     }
     
     public OperacionesDeEmpresaVista (JDialog dialog,
@@ -142,30 +153,44 @@ public class OperacionesDeEmpresaVista extends JDialog {
         //Configuro los componentes para el panel jpConsulta.
         JPanel jpConsulta = new JPanel(new GridBagLayout());
 
-        GridBagConstraints constraints = new GridBagConstraints();
+        GridBagConstraints conf = new GridBagConstraints();
 
         //Componente de la fila 0 columna 0.
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.weightx = 1.0;
-        constraints.insets = new Insets(10, 10, 10, 10);
-        constraints.fill = GridBagConstraints.HORIZONTAL;
+        conf.gridx = conf.gridy = 0;
+        conf.weightx = 1.0;
+        conf.insets = new Insets(10, 10, 10, 10);
+        conf.fill = GridBagConstraints.HORIZONTAL;
 
-        jpConsulta.add (addPanelBuscar(), constraints);
+        jpConsulta.add (addPanelBuscar(), conf);
 
         //Componente de la fila 1 columna 0.
-        constraints.gridy = 1;
-        constraints.weighty = 1.0;
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.insets = new Insets (0, 10, 10,10);
+        conf.gridy = 1;
+        conf.weighty = 1.0;
+        conf.fill = GridBagConstraints.BOTH;
+        conf.insets = new Insets (0, 10, 5,10);
 
-        jtEmpresa = new JTable(new DefaultTableModel(
-                new String [] {"Empresa", "Dirección", "Email"},
-                5
-        ));
+        String [] colums = {"Empresa", "Dirección", "Email"};
+        jtEmpresa = new JTable(new DefaultTableModel(colums, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+            
+        });
+        jtEmpresa.addMouseListener(controlador);
         jspTablaEmpresa = new JScrollPane(jtEmpresa);
         
-        jpConsulta.add (jspTablaEmpresa, constraints);
+        jpConsulta.add (jspTablaEmpresa, conf);
+        
+        //Componente de la fila 2 columna 0.
+        conf.gridy = 2;
+        conf.weightx = conf.weighty = 0.0;
+        conf.fill = GridBagConstraints.NONE;
+        conf.anchor = GridBagConstraints.WEST;
+        conf.insets = new Insets(0, 10, 3, 0);
+        
+        jlTotalEmpresa = new JLabel(UtilImg.createImageIcon("iconos/ingresar_empresa.png"));
+        jpConsulta.add(jlTotalEmpresa, conf);
         
         return jpConsulta;
     }
@@ -239,18 +264,20 @@ public class OperacionesDeEmpresaVista extends JDialog {
      * @return Retorna el panel configurado.
      */
     private JPanel addPanelBotones () {
-        jbGuardar = new JButton ("Guardar");
+        jbGuardar = new JButton ();
         jbGuardar.setActionCommand("jbGuardar");
         jbGuardar.addActionListener(controlador);
         
         jbEliminar = new JButton ("Eliminar");
         jbEliminar.setActionCommand("jbEliminar");
         jbEliminar.addActionListener(controlador);
-        jbEliminar.setEnabled(false);
         
         jbCancelar = new JButton ("Cancelar");
         jbCancelar.setActionCommand("jbCancelar");
         jbCancelar.addActionListener(controlador);
+        
+        //Desabilito los botones cancelar y eliminar.
+        configurarBotones(false, "Guardar");
 
         JPanel jpBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
         jpBotones.add (jbGuardar);
@@ -288,4 +315,84 @@ public class OperacionesDeEmpresaVista extends JDialog {
         jtfDireccion.setText(null);
         jtfEmail.setText(null);
     }
+    
+    public void cargarTabla () {
+        //Cargo la tabla con todos los registros de los contactos.
+        cargarTablaNuevaInfo (new EmpresaDAO().todasLasEmpresas());
+        ponerTotalDeEmpresa();
+    }
+    
+    public void cargarTablaNuevaInfo (List <Empresa> list) {
+        limpiarTabla();
+        
+        if (list.size() > 0) {
+            //Guardo la lista de contactos.
+            listEmpresa = list;
+            
+            DefaultTableModel modelo = (DefaultTableModel)jtEmpresa.getModel();
+        
+            for (Empresa empresa : listEmpresa)
+                modelo.addRow(empresa.toArray());
+
+            //Actualizar tabla.
+            jtEmpresa.updateUI();
+        }
+    }
+    
+    private void limpiarTabla () {
+        //Inicializo la posición de filas a cero.
+        ((DefaultTableModel)jtEmpresa.getModel()).setNumRows(0);
+    }
+    
+    public Empresa guardarDatos () {
+        Empresa empresa = new Empresa ();
+        
+        if (actualizar_eliminar)
+            empresa.setId(listEmpresa.get(jtEmpresa.getSelectedRow()).getId());
+        
+        //Cargo el objeto empresa.
+        empresa.setNombre(jtfEmpresa.getText());
+        empresa.setDireccion(jtfDireccion.getText());
+        empresa.setEmail(jtfEmail.getText());
+        
+        //Retorna el objeto empresa.
+        return empresa;
+    }
+    
+    public void cargarDatos (int indexFila) {
+        Empresa empresa = listEmpresa.get(indexFila);
+        
+        //Cargar los componentes de la pestaña ABM.
+        jtfEmpresa.setText(empresa.getNombre());
+        jtfDireccion.setText(empresa.getDireccion());
+        jtfEmail.setText(empresa.getEmail());
+        
+        //Cambia de pestaña.
+        jTabbedPane.setSelectedIndex(0);
+    }
+    
+    public void configurarBotones (boolean estado, String text) {
+        //Se le asigna un texto al botón.
+        jbGuardar.setText(text);
+        
+        jbCancelar.setEnabled(estado);
+        jbEliminar.setEnabled(estado);
+    }
+    
+    public String radioButtonSeleccionado () {
+        if (jrbEmail.isSelected())
+            return jrbEmail.getText();
+        
+        return jrbEmpresa.getText();
+    }
+    
+    public String buscarRegistro () {
+        return jtfBuscar.getText();
+    }
+    
+    private void ponerTotalDeEmpresa () {
+        jlTotalEmpresa.setText("Total de empresas : " + jtEmpresa.getRowCount());
+    }
+    
+    
 }
