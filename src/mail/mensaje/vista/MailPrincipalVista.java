@@ -387,7 +387,7 @@ public class MailPrincipalVista extends JFrame {
     }
     
     
-    //TODO : Metodo incompleto.git s
+    //TODO : Metodo incompleto.
     private JPanel panelMensRecibidos () {
         jtMensRecibido = new JTable (new DefaultTableModel(
                 new String [] {"De", "Asunto", "Fecha y hora"},

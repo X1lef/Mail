@@ -95,7 +95,7 @@ public class EmpresaDAO {
         return list;
     }
     
-    public List <Empresa> obtenerContacto (String where, String atributo) {
+    public List <Empresa> obtenerEmpresa (String where, String atributo) {
         String query = String.format("SELECT * FROM empresa %s ORDER BY nombre", where);
         List <Empresa> listEmpresa = new ArrayList<>();
         

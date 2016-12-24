@@ -16,7 +16,7 @@ import static mail.mensaje.vista.OperacionesDeEmpresaVista.actualizar_eliminar;
 
 /**
  *
- * @author Fèlix Pedrozo
+ * @author Félix Pedrozo
  */
 public class OperacionesDeEmpresaControlador extends MouseAdapter implements ActionListener {
     private OperacionesDeEmpresaVista vista;
@@ -90,7 +90,7 @@ public class OperacionesDeEmpresaControlador extends MouseAdapter implements Act
                 }
                 //Actualizo la vista.
                 vista.limpiarCampos();
-                vista.cargarTabla();
+                vista.cargarTablaTodasLasEmpresas();
                 break;
         }
     }
@@ -124,7 +124,7 @@ public class OperacionesDeEmpresaControlador extends MouseAdapter implements Act
                  break;
         }
         
-        return modelo.obtenerContacto(where, vista.buscarRegistro());
+        return modelo.obtenerEmpresa(where, vista.buscarRegistro());
     }
     
     

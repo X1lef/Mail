@@ -19,7 +19,7 @@ public class UtilImg {
      * @param path Ruta en la que se encuentra la imagen.
      * @return Devuelve un objeto <code>ImageIcon</code>
      */
-    protected static ImageIcon createImageIcon (String path) {
+    static ImageIcon createImageIcon (String path) {
         URL imgURL = UtilImg.class.getResource(path);
         if (imgURL != null) 
             return new ImageIcon(imgURL);

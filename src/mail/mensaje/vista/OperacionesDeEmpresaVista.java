@@ -49,7 +49,7 @@ public class OperacionesDeEmpresaVista extends JDialog {
         crearIU (indexTab);
         
         //Cargo tabla.
-        cargarTabla();
+        cargarTablaTodasLasEmpresas();
     }
     
     public OperacionesDeEmpresaVista (JFrame frame,
@@ -65,7 +65,7 @@ public class OperacionesDeEmpresaVista extends JDialog {
         crearIU (indexTab);
         
         //Cargar tabla.
-        cargarTabla();
+        cargarTablaTodasLasEmpresas();
     }
     
     public OperacionesDeEmpresaVista (JDialog dialog,
@@ -316,9 +316,10 @@ public class OperacionesDeEmpresaVista extends JDialog {
         jtfEmail.setText(null);
     }
     
-    public void cargarTabla () {
-        //Cargo la tabla con todos los registros de los contactos.
+    public void cargarTablaTodasLasEmpresas () {
+        //Cargo la tabla con todos los registros de las empresas.
         cargarTablaNuevaInfo (new EmpresaDAO().todasLasEmpresas());
+        //Actualizo total de empresas.
         ponerTotalDeEmpresa();
     }
     
