@@ -2,7 +2,6 @@ package mail.mensaje.vista;
 
 import javax.swing.SwingUtilities;
 import static javax.swing.UIManager.*;
-import mail.mensaje.controlador.LoginControlador;
 
 /**
  * Clase que contiene el metodo main, el punto de inicio del programa.  
@@ -20,7 +19,7 @@ public class Main {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                new LoginControlador();
+                new LoginVista ();
             }
         });
     }

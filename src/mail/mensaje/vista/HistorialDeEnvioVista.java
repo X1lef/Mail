@@ -1,14 +1,7 @@
 package mail.mensaje.vista;
 
+import javax.swing.*;
 import java.awt.Dimension;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
 
 /**
  * Clase que muestra el historial futuro de los mensajes pendientes que van ha
@@ -25,6 +18,8 @@ public class HistorialDeEnvioVista extends JDialog {
     public HistorialDeEnvioVista (JDialog dialog) {
         super (dialog);
         inicializarComponentes ();
+        
+        setVisible(true);
     }
     
     private void inicializarComponentes () {
@@ -48,7 +43,7 @@ public class HistorialDeEnvioVista extends JDialog {
         jtHistorial = new JTable(data, columns);
         jspHistorial = new JScrollPane(jtHistorial);
         
-        //TODO : Dato por defecto que le pongo para ver como queda.
+        //TODO : Dato de prueba.
         //Configuro los label que mostraran información referente al historial de envío.
         jlCantMensEnviado = new JLabel("Pendiente : 1");
         jlCantMensEnviado.setIcon(

@@ -5,7 +5,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.JSpinner;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -16,13 +15,12 @@ import mail.mensaje.vista.ProgramarEnvioVista;
  */
 public class ProgramarEnvioControlador implements ItemListener, ChangeListener,
         ActionListener {
-    private ProgramarEnvioVista programarEnvioVista;
     private int intervalo = 1;
     private String singular = "día", plural = "días";
+    private final ProgramarEnvioVista programarEnvioVista;
     
-    public ProgramarEnvioControlador (JDialog dialog) {
-        programarEnvioVista = new ProgramarEnvioVista(dialog, this);
-        programarEnvioVista.setVisible(true);
+    public ProgramarEnvioControlador (ProgramarEnvioVista vista) {
+        programarEnvioVista = vista;
     }
 
     @Override
@@ -37,15 +35,19 @@ public class ProgramarEnvioControlador implements ItemListener, ChangeListener,
             plural = "días";
         } else {
             programarEnvioVista.habilitarDias(true);
-            if (itemSeleccionado.equals("Semanal")) {
-                singular = "semana";
-                plural = "semanas";
-            } else if (itemSeleccionado.equals("Mensual")) {
-                singular = "mes";
-                plural = "meses";
-            } else {
-                singular = "año";
-                plural = "años";
+            switch (itemSeleccionado) {
+                case "Semanal":
+                    singular = "semana";
+                    plural = "semanas";
+                    break;
+                case "Mensual":
+                    singular = "mes";
+                    plural = "meses";
+                    break;
+                default:
+                    singular = "año";
+                    plural = "años";
+                    break;
             }
         }
         programarEnvioVista.actualizarPorCantidad(intervalo, singular, plural);
@@ -68,6 +70,5 @@ public class ProgramarEnvioControlador implements ItemListener, ChangeListener,
             case "jbCancelar" :
                 programarEnvioVista.dispose();
         }
-            
     }
 }

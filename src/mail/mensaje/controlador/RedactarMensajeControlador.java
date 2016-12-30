@@ -3,40 +3,40 @@ package mail.mensaje.controlador;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import mail.mensaje.vista.HistorialDeEnvioVista;
+import mail.mensaje.vista.OperacionesDeContactoVista;
+import mail.mensaje.vista.ProgramarEnvioVista;
 import mail.mensaje.vista.RedactarMensajeVista;
 
 /**
  * @author Félix Pedrozo
  */
 public class RedactarMensajeControlador implements ActionListener {
-    private RedactarMensajeVista redactarMensajeVista;
+    private final RedactarMensajeVista redactarMensajeVista;
     
-    public RedactarMensajeControlador (JFrame frame) {
-        redactarMensajeVista = new RedactarMensajeVista(frame, this);
-        redactarMensajeVista.setVisible(true);
+    public RedactarMensajeControlador (RedactarMensajeVista vista) {
+        //Guardo referencia de la vista.
+        redactarMensajeVista = vista;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         switch (((JButton)e.getSource()).getName ()) {
             case "jbContactosIr" :
-                new OperacionContactoControlador(redactarMensajeVista, 1);
+                new OperacionesDeContactoVista(redactarMensajeVista, 1);
                 break;
             case "jbCancelar" :
                 redactarMensajeVista.dispose();
                 break;
             case "jbHistorialEnvio" :
-                new HistorialDeEnvioVista(redactarMensajeVista).setVisible(true);
+                new HistorialDeEnvioVista(redactarMensajeVista);
                 break;
             case "jbProgramarEnvio" :
-                new ProgramarEnvioControlador(redactarMensajeVista);
+                new ProgramarEnvioVista(redactarMensajeVista);
                 break;
             case "jbAgregarImagen" :
                 redactarMensajeVista.mostrarSelectorDeArchivos();
-                
+                break;
         }
     }
-    
 }

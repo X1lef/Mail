@@ -1,27 +1,10 @@
 package mail.mensaje.vista;
 
-import com.toedter.calendar.JDateChooser;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.util.Calendar;
+import java.awt.*;
+import javax.swing.*;
 import java.util.Date;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JSpinner;
-import javax.swing.JTabbedPane;
-import javax.swing.SpinnerListModel;
-import javax.swing.SpinnerNumberModel;
+import java.util.Calendar;
+import com.toedter.calendar.JDateChooser;
 import mail.mensaje.controlador.ProgramarEnvioControlador;
 
 /**
@@ -37,12 +20,14 @@ public class ProgramarEnvioVista extends JDialog {
     private JDateChooser jdcFechaMin, jdcFechaMax;
     private JComboBox <String> jcbFrecuencia;
     private JTabbedPane jTabbedPane;
-    private ProgramarEnvioControlador controlador;
+    private final ProgramarEnvioControlador controlador;
     
-    public ProgramarEnvioVista (JDialog padre, ProgramarEnvioControlador controlador) {
+    public ProgramarEnvioVista (JDialog padre) {
         super (padre, "Programar envío");
-        this.controlador = controlador;
+        controlador = new ProgramarEnvioControlador(this);
         crearIU ();
+        
+        setVisible(true);
     }
     
     private void crearIU () {

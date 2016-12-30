@@ -6,6 +6,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.Arrays;
 import mail.mensaje.vista.LoginVista;
+import mail.mensaje.vista.MailPrincipalVista;
 
 /**
  * @author Félix Pedrozo
@@ -18,9 +19,9 @@ public class LoginControlador implements ActionListener, FocusListener {
     
     private final LoginVista vista;
 
-    public LoginControlador () {
-        vista = new LoginVista (this);
-        vista.setVisible(true);
+    public LoginControlador (LoginVista vista) {
+        //Guardo la referencia de la vista.
+        this.vista = vista;
     }
 
     @Override
@@ -41,7 +42,7 @@ public class LoginControlador implements ActionListener, FocusListener {
                     
                     else {
                         //Abro la nueva ventana MailPrincipalVista.
-                        new MailControlador();
+                        new MailPrincipalVista ();
                         //Libero los recursos utilizados por la ventana LoginVista.
                         vista.dispose();
                     }

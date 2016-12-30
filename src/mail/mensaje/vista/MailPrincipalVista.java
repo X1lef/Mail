@@ -1,32 +1,10 @@
 package mail.mensaje.vista;
 
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Insets;
+import java.awt.*;
+import javax.swing.*;
+import javax.swing.border.*;
 import java.awt.event.KeyEvent;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JPanel;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
-import javax.swing.JTable;
-import javax.swing.JToolBar;
 import javax.swing.JToolBar.Separator;
-import javax.swing.JTree;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.EtchedBorder;
-import javax.swing.border.SoftBevelBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -53,13 +31,11 @@ public class MailPrincipalVista extends JFrame {
     private JToolBar toolBar;
     private final MailControlador controlador;
     
-    /**
-     * @param controlador Referencia de la clase que manejara los eventos de
-     * la clase <code>MailPrincipal</code>
-     */
-    public MailPrincipalVista (MailControlador controlador) {
-        this.controlador = controlador;
+    public MailPrincipalVista () {
+        controlador = new MailControlador (this);
         crearIU ();
+        
+        setVisible(true);
     }
     
     /**
@@ -371,10 +347,10 @@ public class MailPrincipalVista extends JFrame {
         
         jpTipoMensj = new JPanel (new CardLayout());
         
-        String [] colums = {"Para", "Asunto", "Contenido", "Hora envio", "Fecha envio"};
+        String [] colums = {"Para", "Asunto", "Contenido", "Hora envío", "Fecha envío"};
         jpTipoMensj.add ("mensajeNormal", crearPanelConTabla(colums, jtMensEnviados));
         
-        colums = new String [] {"Estado", "Para", "Asunto", "Contenido", "Fecha envio", "Hora envio", "Cant enviado"};
+        colums = new String [] {"Estado", "Para", "Asunto", "Contenido", "Fecha envío", "Hora envío", "Cantidad enviado"};
         jpTipoMensj.add ("mensajeProg", crearPanelConTabla(colums, jtMensProg));
         
         JPanel jpMensRecibido = new JPanel (new BorderLayout());
@@ -390,7 +366,7 @@ public class MailPrincipalVista extends JFrame {
         //Inserto panel 1.
         panel.add("jpMensEnviado", panelMensEnviado());
 
-        String [] colums = {"Leeido", "De", "Asunto", "Contenido", "Fecha envío", "Hora envio"};
+        String [] colums = {"Leído", "De", "Asunto", "Contenido", "Fecha envío", "Hora envío"};
         //Inserto panel 2.
         panel.add("jpMensRecibido", crearPanelConTabla(colums, jtMensRecibido));
 

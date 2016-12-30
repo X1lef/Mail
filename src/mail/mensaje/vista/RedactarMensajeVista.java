@@ -1,25 +1,8 @@
 package mail.mensaje.vista;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
+import javax.swing.*;
 import java.io.File;
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.JToolBar;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
 import javax.swing.filechooser.FileFilter;
@@ -40,14 +23,17 @@ public class RedactarMensajeVista extends JDialog {
     private JButton jbEnviar, jbHistorialEnvio, jbCancelar, jbGuardar,
         jbProgramarEnvio, jbContactosIr, jbNegrita, jbCursiva, jbAgregarImagen,
         jbAgregarLink, jbSubrayado;
+    private final RedactarMensajeControlador controlador;
     
-    
-    public RedactarMensajeVista (JFrame frame, RedactarMensajeControlador controlador) {
+    public RedactarMensajeVista (JFrame frame) {
         super(frame, "Redactar mensaje");
-        crearIU(controlador);
+        controlador = new RedactarMensajeControlador(this);
+        crearIU();
+        
+        setVisible(true);
     }
     
-    private void crearIU (RedactarMensajeControlador controlador) {
+    private void crearIU () {
         //Configración de las propiedades del Dialog.
         setModal(true);
         setSize(900, 650);

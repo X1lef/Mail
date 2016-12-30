@@ -1,24 +1,8 @@
 package mail.mensaje.vista;
 
-import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Insets;
+import java.awt.*;
+import javax.swing.*;
 import java.util.List;
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import mail.mensaje.controlador.OperacionesDeEmpresaControlador;
 import mail.mensaje.modelo.dao.EmpresaDAO;
@@ -41,36 +25,35 @@ public class OperacionesDeEmpresaVista extends JDialog {
     public static boolean actualizar_eliminar = false;
     private OperacionesDeEmpresaControlador controlador;
 
-    public OperacionesDeEmpresaVista (JFrame frame, int indexTab,
-            OperacionesDeEmpresaControlador controlador) {
+    public OperacionesDeEmpresaVista (JFrame frame, int indexTab) {
         super (frame, "Empresa");
-        //Obtengo la referencia del controlador.
-        this.controlador = controlador;
+        controlador = new OperacionesDeEmpresaControlador (this);
         crearIU (indexTab);
         
         //Cargo tabla.
         cargarTablaTodasLasEmpresas();
+        
+        setVisible(true);
     }
     
-    public OperacionesDeEmpresaVista (JFrame frame,
-            OperacionesDeEmpresaControlador controlador) {
-        this (frame, 0, controlador);
+    public OperacionesDeEmpresaVista (JFrame frame) {
+        this (frame, 0);
     }
     
-    public OperacionesDeEmpresaVista (JDialog dialog, int indexTab,
-            OperacionesDeEmpresaControlador controlador) {
+    public OperacionesDeEmpresaVista (JDialog dialog, int indexTab) {
         super (dialog, "Empresa");
         //Obtengo la referencia del controlador.
-        this.controlador = controlador;
+        controlador = new OperacionesDeEmpresaControlador (this);
         crearIU (indexTab);
         
         //Cargar tabla.
         cargarTablaTodasLasEmpresas();
+        
+        setVisible(true);
     }
     
-    public OperacionesDeEmpresaVista (JDialog dialog,
-            OperacionesDeEmpresaControlador controlador) {
-        this (dialog, 0, controlador);
+    public OperacionesDeEmpresaVista (JDialog dialog) {
+        this (dialog, 0);
     }
 
     private void crearIU (int indexTab) {
@@ -394,6 +377,4 @@ public class OperacionesDeEmpresaVista extends JDialog {
     private void ponerTotalDeEmpresa () {
         jlTotalEmpresa.setText("Total de empresas : " + jtEmpresa.getRowCount());
     }
-    
-    
 }

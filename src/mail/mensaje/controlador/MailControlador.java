@@ -1,23 +1,23 @@
 package mail.mensaje.controlador;
 
+import java.awt.event.*;
 import java.awt.CardLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.UIManager;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import mail.mensaje.vista.MailPrincipalVista;
+import mail.mensaje.vista.OperacionesDeContactoVista;
+import mail.mensaje.vista.OperacionesDeEmpresaVista;
+import mail.mensaje.vista.RedactarMensajeVista;
 
 public class MailControlador implements TreeSelectionListener, ActionListener, ItemListener {
     private final MailPrincipalVista vista;
     
-    public MailControlador () {
-        vista = new MailPrincipalVista(this);
-        vista.setVisible(true);
+    public MailControlador (MailPrincipalVista vista) {
+        //Guardo la referencia de la vista.
+        this.vista = vista;
     }
 
     @Override
@@ -52,19 +52,19 @@ public class MailControlador implements TreeSelectionListener, ActionListener, I
                 vista.activarVisibilidad(true, false, false, false, false, false);
                 break;
             case "jbRedactar" :
-                new RedactarMensajeControlador(vista);
+                new RedactarMensajeVista(vista);
                 break;
             case "jbIngresarContacto" :
-                new OperacionContactoControlador (vista);
+                new OperacionesDeContactoVista (vista);
                 break;
             case "jbIrContactos" :
-                new OperacionContactoControlador(vista, 1);
+                new OperacionesDeContactoVista(vista, 1);
                 break;
             case "jbIngresarEmpresa" :
-                new OperacionesDeEmpresaControlador (vista);
+                new OperacionesDeEmpresaVista (vista);
                 break;
             case "jbIrEmpresas" :
-                new OperacionesDeEmpresaControlador (vista, 1);
+                new OperacionesDeEmpresaVista (vista, 1);
                 break;
             case "jbMensNormal" :
                 cambiarPanelDeTipoMensEnviado("mensajeNormal");

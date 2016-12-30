@@ -17,10 +17,11 @@ public class LoginVista extends JFrame {
     private Component rigidArea;
     private final LoginControlador controlador;
 
-    public LoginVista (LoginControlador controlador) {
-        //Guardo la referencia del controlador.
-        this.controlador = controlador;
+    public LoginVista () {
+        controlador = new LoginControlador(this);
         crearVistaLogin ();
+        
+        setVisible(true);
     }
 
     private void crearVistaLogin () {

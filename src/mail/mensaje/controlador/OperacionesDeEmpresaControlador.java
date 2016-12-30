@@ -1,12 +1,7 @@
 package mail.mensaje.controlador;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.List;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
 import mail.mensaje.modelo.dao.EmpresaDAO;
 import mail.mensaje.vista.OperacionesDeEmpresaVista;
 import javax.swing.JTable;
@@ -19,21 +14,14 @@ import static mail.mensaje.vista.OperacionesDeEmpresaVista.actualizar_eliminar;
  * @author Félix Pedrozo
  */
 public class OperacionesDeEmpresaControlador extends MouseAdapter implements ActionListener {
-    private OperacionesDeEmpresaVista vista;
-    private EmpresaDAO modelo;
+    private final OperacionesDeEmpresaVista vista;
+    private final EmpresaDAO modelo;
     private int indexFila;
     
-    public OperacionesDeEmpresaControlador (JDialog dialog) {
-        vista = new OperacionesDeEmpresaVista (dialog, this);
-        vista.setVisible(true);
-    }
-    public OperacionesDeEmpresaControlador (JFrame frame) {
-        this(frame, 0);
-    }
-    public OperacionesDeEmpresaControlador (JFrame frame, int intervalo) {
+    public OperacionesDeEmpresaControlador (OperacionesDeEmpresaVista vista) {
+        //Guardo la referencia de la vista.
+        this.vista = vista;
         modelo = new EmpresaDAO();
-        vista = new OperacionesDeEmpresaVista (frame, intervalo, this);
-        vista.setVisible(true);
     }
 
     @Override
@@ -126,8 +114,4 @@ public class OperacionesDeEmpresaControlador extends MouseAdapter implements Act
         
         return modelo.obtenerEmpresa(where, vista.buscarRegistro());
     }
-    
-    
-    
-    
 }

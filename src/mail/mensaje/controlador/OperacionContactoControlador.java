@@ -1,45 +1,27 @@
 package mail.mensaje.controlador;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
+import javax.swing.*;
 import java.util.List;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JTable;
+import static javax.swing.JOptionPane.*;
+import mail.mensaje.modelo.vo.Contacto;
 import mail.mensaje.modelo.dao.ContactoDAO;
 import mail.mensaje.vista.OperacionesDeContactoVista;
 import static mail.mensaje.vista.OperacionesDeContactoVista.actualizar_eliminar;
-import static javax.swing.JOptionPane.*;
-import mail.mensaje.modelo.vo.Contacto;
+import mail.mensaje.vista.OperacionesDeEmpresaVista;
 
 /**
  * @author Félix Pedrozo
  */
 public class OperacionContactoControlador extends MouseAdapter implements ActionListener {
-    private OperacionesDeContactoVista vista;
-    private ContactoDAO modelo;
+    private final OperacionesDeContactoVista vista;
+    private final ContactoDAO modelo;
     private int indexFila;
     
-    public OperacionContactoControlador (JFrame frame) {
-        this(frame, 0);
-    }
-    
-    public OperacionContactoControlador (JFrame frame, int intervalo) {
-        vista = new OperacionesDeContactoVista(frame, intervalo, this);
+    public OperacionContactoControlador (OperacionesDeContactoVista vista) {
+        //Guardo la referencia de la vista.
+        this.vista = vista;
         modelo = new ContactoDAO ();
-        vista.setVisible(true);
-    }
-    
-    public OperacionContactoControlador (JDialog dialog) {
-        this(dialog, 0);
-    }
-    
-    public OperacionContactoControlador (JDialog dialog, int intervalo) {
-        vista = new OperacionesDeContactoVista(dialog, intervalo, this);
-        modelo = new ContactoDAO ();
-        vista.setVisible(true);
     }
 
     @Override
@@ -48,7 +30,7 @@ public class OperacionContactoControlador extends MouseAdapter implements Action
         
         switch (command) {
             case "jbIngresarEmpresa" :
-                new OperacionesDeEmpresaControlador(vista);
+                new OperacionesDeEmpresaVista(vista);
                 break;
                 
             case "jbCancelar" :

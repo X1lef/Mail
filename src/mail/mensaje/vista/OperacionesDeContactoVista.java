@@ -1,31 +1,14 @@
 package mail.mensaje.vista;
 
-import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Insets;
+import java.awt.*;
+import javax.swing.*;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import mail.mensaje.controlador.OperacionContactoControlador;
 import mail.mensaje.modelo.dao.ContactoDAO;
 import mail.mensaje.modelo.dao.EmpresaDAO;
 import mail.mensaje.modelo.vo.Contacto;
 import mail.mensaje.modelo.vo.Empresa;
+import mail.mensaje.controlador.OperacionContactoControlador;
 
 /**
  * Clase que permitira realizar operaciones con los contactos.
@@ -45,36 +28,36 @@ public class OperacionesDeContactoVista extends JDialog {
     private OperacionContactoControlador controlador;
     public static boolean actualizar_eliminar = false;
 
-    public OperacionesDeContactoVista (JFrame frame, int indice,
-            OperacionContactoControlador controlador) {
+    public OperacionesDeContactoVista (JFrame frame, int indice) {
         super (frame, "Contactos");
-        this.controlador = controlador;
+        controlador = new OperacionContactoControlador(this);
         crearIU (indice);
         
         //Cargo los componentes de la vista.
         cargarComboBox();
         cargarTablaTodosLosContactos();
+        
+        setVisible(true);
     }
     
-    public OperacionesDeContactoVista (JFrame frame, 
-              OperacionContactoControlador controlador) {
-        this (frame, 0, controlador);
+    public OperacionesDeContactoVista (JFrame frame) {
+        this (frame, 0);
     }
     
-    public OperacionesDeContactoVista (JDialog dialog, int indice,
-                OperacionContactoControlador controlador) {
+    public OperacionesDeContactoVista (JDialog dialog, int indice) {
         super (dialog, "Contactos");
-        this.controlador = controlador;
+        controlador = new OperacionContactoControlador(this);
         crearIU (indice);
         
         //Cargo los componentes de la vista.
         cargarComboBox();
         cargarTablaTodosLosContactos();
+        
+        setVisible(true);
     }
     
-    public OperacionesDeContactoVista (JDialog dialog,
-                OperacionContactoControlador controlador) {
-        this (dialog, 0, controlador);
+    public OperacionesDeContactoVista (JDialog dialog) {
+        this (dialog, 0);
     }
     
     private void crearIU (int indexTab) {
