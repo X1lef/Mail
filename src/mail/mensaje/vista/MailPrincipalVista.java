@@ -5,6 +5,7 @@ import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.KeyEvent;
 import javax.swing.ButtonGroup;
@@ -16,6 +17,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
 import javax.swing.JToolBar.Separator;
@@ -23,6 +25,7 @@ import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
+import javax.swing.border.EtchedBorder;
 import javax.swing.border.SoftBevelBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -36,19 +39,19 @@ import mail.mensaje.controlador.MailControlador;
  */
 public class MailPrincipalVista extends JFrame {
     private JTree jTree;
-    private JTable jtMensajes, jtMensRecibido, jtMensProg, jtMensEnviados;
-    private JScrollPane jspMenPane, jspTablaMensaje;
+    private JTable jtMensRecibido, jtMensProg, jtMensEnviados, jtMensGuardado, jtMensEliminado;
+    private JScrollPane jspMenPane;
     private JLabel jlConexion, jlCantMensajes;
     private JMenuBar menuBar;
-    private JMenu jmArchivo, jmMensajes, jmIr, jmHerramientas, jmLookAndFeel;
+    private JMenu jmArchivo, jmMensajes, jmIr, jmHerramientas, jmtema;
     private Separator sp1, sp2;
     private JButton jbInicio, jbRedactar, jbIngresarContacto,
         jbIngresarEmpresa, jbIrContactos, jbEliminarMensaje, jbResponder, 
         jbResponderTodos, jbReenviarMensaje, jbEditarMensaje, jbRetornarMensaje,
         jbIrEmpresas;
-    private JPanel jpCenter, jpSouth, jpWest;
+    private JPanel jpCenter, jpSouth, jpWest, jpTipoMensj, jpMensajes;
     private JToolBar toolBar;
-    private MailControlador controlador;
+    private final MailControlador controlador;
     
     /**
      * @param controlador Referencia de la clase que manejara los eventos de
@@ -97,9 +100,7 @@ public class MailPrincipalVista extends JFrame {
         try {
             UIManager.setLookAndFeel(className);
             SwingUtilities.updateComponentTreeUI(this);
-        }catch (Exception ex) {
-            setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-        }
+        }catch (Exception ex) {}
     }
     
     /**
@@ -112,7 +113,7 @@ public class MailPrincipalVista extends JFrame {
         jmMensajes = new JMenu ("Mensajes");
         jmIr = new JMenu ("Ir");
         jmHerramientas = new JMenu ("Herramientas");
-        jmLookAndFeel = new JMenu ("Look And Feel");
+        jmtema = new JMenu ("Tema");
         
         //Creo los item de los diferentes Look And Feel que pueden ser instalados para la plataforma.
         ButtonGroup group = new ButtonGroup();
@@ -120,9 +121,9 @@ public class MailPrincipalVista extends JFrame {
             JRadioButtonMenuItem item = new JRadioButtonMenuItem(info.getName());
             item.addItemListener(controlador);
             group.add (item);
-            jmLookAndFeel.add (item);
+            jmtema.add (item);
         }
-        jmHerramientas.add (jmLookAndFeel);
+        jmHerramientas.add (jmtema);
             
         //Inicializando el menuBar y añado los menus.
         menuBar = new JMenuBar();
@@ -138,21 +139,6 @@ public class MailPrincipalVista extends JFrame {
         addButtons(toolBar);
         //Configuro los botones que seran visibles.
         activarVisibilidad(true, false, false, false, false, false);
-        
-        jtMensajes = new JTable (new DefaultTableModel(
-            new Object [][] {
-                {"leticiafie1954@gmail.com", "Publicidad de Avón", "11/02/16", "10:30hs"},
-                {"leticiafie1954@gmail.com", "Publicidad de Avón", "11/02/16", "10:30hs"},
-                {"leticiafie1954@gmail.com", "Publicidad de Avón", "11/02/16", "10:30hs"},
-                {"leticiafie1954@gmail.com", "Publicidad de Avón", "11/02/16", "10:30hs"},
-            }, 
-            new String [] {
-                "Para", "Asunto", "Fecha", "Hora"
-            }
-        ));
-        
-        jspTablaMensaje = new JScrollPane ();
-        jspTablaMensaje.setViewportView(jtMensajes);
         
         DefaultMutableTreeNode treeNodeMain = new DefaultMutableTreeNode("Tipos de mensajes");
         //Cargo los nodos al nodo principal.
@@ -172,43 +158,44 @@ public class MailPrincipalVista extends JFrame {
         
         //Configuro los componentes del panel jpWest.
         jpWest = new JPanel (new GridBagLayout());
-        GridBagConstraints constraints = new GridBagConstraints ();
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.weighty = 1.0;
-        constraints.fill = GridBagConstraints.VERTICAL;
-        constraints.insets = new Insets (10, 10, 3, 10);
+        GridBagConstraints conf = new GridBagConstraints ();
+        conf.gridx = 0;
+        conf.gridy = 0;
+        conf.weighty = 1.0;
+        conf.fill = GridBagConstraints.VERTICAL;
+        conf.insets = new Insets (10, 10, 3, 10);
         
-        jpWest.add (jspMenPane, constraints);
+        jpWest.add (jspMenPane, conf);
         
         //Configuro los componentes del panel jpCenter.
         jpCenter = new JPanel (new GridBagLayout());
-        constraints.weightx = 1.0;
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.insets = new Insets(10, 0, 3, 10);
+        conf.weightx = 1.0;
+        conf.fill = GridBagConstraints.BOTH;
+        conf.insets = new Insets(10, 0, 3, 10);
         
-        jpCenter.add (jspTablaMensaje, constraints);
+        jpMensajes = panelDeMensajes();
+        jpCenter.add (jpMensajes, conf);
         
         //Configuro los componentes del panel jpSouth.
         jpSouth = new JPanel(new GridBagLayout());
         //Componente de la fila 0 columna 0.
-        constraints.weighty = 0.0;
-        constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.anchor = GridBagConstraints.WEST;
-        constraints.insets = new Insets (0, 10, 3, 0);
+        conf.weighty = 0.0;
+        conf.fill = GridBagConstraints.HORIZONTAL;
+        conf.anchor = GridBagConstraints.WEST;
+        conf.insets = new Insets (0, 10, 3, 0);
         
         jlCantMensajes = new JLabel ("Cantidad de mensajes");
-        jpSouth.add (jlCantMensajes, constraints);
+        jpSouth.add (jlCantMensajes, conf);
         
         //Componente de la fila 0 columna 1.
-        constraints.gridx = 1;
-        constraints.anchor = GridBagConstraints.EAST;
-        constraints.insets = new Insets (0, 0, 3, 10);
+        conf.gridx = 1;
+        conf.anchor = GridBagConstraints.EAST;
+        conf.insets = new Insets (0, 0, 3, 10);
         
-        //TODO : Valor por defecto que lo agrego para ver como queda.
+        //TODO : Dato de prueba.
         jlConexion = new JLabel("Internet deshabilitado", JLabel.RIGHT);
         jlConexion.setIcon(UtilImg.createImageIcon("iconos\\disconnect.png"));
-        jpSouth.add (jlConexion, constraints);
+        jpSouth.add (jlConexion, conf);
         
         //Configuro mi Frame.
         setTitle("Mail");
@@ -235,8 +222,7 @@ public class MailPrincipalVista extends JFrame {
      * @param topNode Contiene la referencia del nodo principal.
      */
     private void createNodes (DefaultMutableTreeNode topNode) {
-        DefaultMutableTreeNode tipoDeMensaje = null,
-                               categoria = null;
+        DefaultMutableTreeNode tipoDeMensaje, categoria;
         
         categoria = new DefaultMutableTreeNode ("Mensajes");
         topNode.add (categoria);
@@ -256,9 +242,36 @@ public class MailPrincipalVista extends JFrame {
     
     /**
      * Creara los botones para insertarlo a la barra de herramientas.
-     * @param toolBar Contiene la referencia de la barra de herramientas principal.
+     * 
+     * @param toolBar Contiene la referencia de la barra de herramientas a la
+     * cual se insertara los botones.
      */
     private void addButtons (JToolBar toolBar) {
+        //Inicializo los botones.
+        inicializarBotonesDelToolbar ();
+        
+        //Inserto los botones al toolbar.
+        toolBar.add(jbInicio);
+        sp1 = new JToolBar.Separator();
+        toolBar.add(sp1);
+        toolBar.add(jbRedactar);
+        
+        toolBar.add(jbResponder);
+        toolBar.add(jbResponderTodos);
+        toolBar.add(jbEditarMensaje);
+        toolBar.add(jbEliminarMensaje);
+        toolBar.add(jbReenviarMensaje);
+        toolBar.add(jbRetornarMensaje);
+        
+        sp2 = new JToolBar.Separator();
+        toolBar.add(sp2);
+        toolBar.add(jbIngresarContacto);
+        toolBar.add(jbIrContactos);
+        toolBar.add(jbIngresarEmpresa);
+        toolBar.add(jbIrEmpresas);
+    }
+    
+    private void inicializarBotonesDelToolbar () {
         jbInicio = configurarBoton("Inicio",
                                  "iconos/inicio.png",
                                  "jbInicio", "Inicio (Alt+I)");
@@ -312,26 +325,6 @@ public class MailPrincipalVista extends JFrame {
         jbRetornarMensaje = configurarBoton("Retornar mensaje",
                                  "iconos/responder_mensaje.png",
                                  "jbRetornarMensaje", "Retornar mensaje (Alt+I)");
-        
-        //Inserto los botones al toolbar.
-        toolBar.add(jbInicio);
-        sp1 = new JToolBar.Separator();
-        toolBar.add(sp1);
-        toolBar.add(jbRedactar);
-        
-        toolBar.add(jbResponder);
-        toolBar.add(jbResponderTodos);
-        toolBar.add(jbEditarMensaje);
-        toolBar.add(jbEliminarMensaje);
-        toolBar.add(jbReenviarMensaje);
-        toolBar.add(jbRetornarMensaje);
-        
-        sp2 = new JToolBar.Separator();
-        toolBar.add(sp2);
-        toolBar.add(jbIngresarContacto);
-        toolBar.add(jbIrContactos);
-        toolBar.add(jbIngresarEmpresa);
-        toolBar.add(jbIrEmpresas);
     }
     
     /**
@@ -357,42 +350,75 @@ public class MailPrincipalVista extends JFrame {
         return button;
     }
     
-    //TODO : Metodo incompleto.
-    private JPanel panelMensEnviados () {
-        //Creacion de la tabla jtMensProg.
-        jtMensProg = new JTable (new DefaultTableModel(
-                new String [] {"Estado", "Para", "Asunto", "Culminado", "Fecha y hora"},
-                0
-        ));
-        //Creacion de la tabla jtMensEnviados.
-        jtMensEnviados = new JTable (new DefaultTableModel (
-                new String [] {"Para", "Asunto", "Fecha y hora"},
-                0
-        ));
-        
+    private JPanel panelMensEnviado () {
         //Creacion de la barra de herramientas.
         JToolBar jtbTipoMensRecibido = new JToolBar();
-        jtbTipoMensRecibido.add (new JButton("Mensaje normal"));
-        jtbTipoMensRecibido.add (new JButton("Mensaje programado"));
+        //Agrego borde al toolBar.
+        jtbTipoMensRecibido.setBorder(new EtchedBorder());
         
-        JPanel jpTipoMensj = new JPanel (new CardLayout());
-        jpTipoMensj.add ("mensajeNormal", jtMensEnviados);
-        jpTipoMensj.add ("mensajeProg", jtMensProg);
+        //Configuro los botones para agregar al toolbar.
+        JButton jbMensNormal = new JButton ("Mensaje normal");
+        jbMensNormal.addActionListener(controlador);
+        jbMensNormal.setActionCommand("jbMensNormal");
+        
+        JButton jbMensProg = new JButton ("Mensaje programado");
+        jbMensProg.addActionListener(controlador);
+        jbMensProg.setActionCommand("jbMensProg");
+        
+        jtbTipoMensRecibido.add (jbMensNormal);
+        jtbTipoMensRecibido.add (new JToolBar.Separator ());
+        jtbTipoMensRecibido.add (jbMensProg);
+        
+        jpTipoMensj = new JPanel (new CardLayout());
+        
+        String [] colums = {"Para", "Asunto", "Contenido", "Hora envio", "Fecha envio"};
+        jpTipoMensj.add ("mensajeNormal", crearPanelConTabla(colums, jtMensEnviados));
+        
+        colums = new String [] {"Estado", "Para", "Asunto", "Contenido", "Fecha envio", "Hora envio", "Cant enviado"};
+        jpTipoMensj.add ("mensajeProg", crearPanelConTabla(colums, jtMensProg));
         
         JPanel jpMensRecibido = new JPanel (new BorderLayout());
-        jpMensRecibido.add(jtbTipoMensRecibido, BorderLayout.NORTH);
+        jpMensRecibido.add(jtbTipoMensRecibido, BorderLayout.PAGE_START);
         jpMensRecibido.add(jpTipoMensj, BorderLayout.CENTER);
         
         return jpMensRecibido;
     }
     
+    private JPanel panelDeMensajes () {
+        JPanel panel = new JPanel (new CardLayout());
+        
+        //Inserto panel 1.
+        panel.add("jpMensEnviado", panelMensEnviado());
+
+        String [] colums = {"Leeido", "De", "Asunto", "Contenido", "Fecha envío", "Hora envio"};
+        //Inserto panel 2.
+        panel.add("jpMensRecibido", crearPanelConTabla(colums, jtMensRecibido));
+
+        colums = new String []{"Para", "Asunto", "Contenido", "Fecha eliminado", "Hora eliminado"};
+        //Inserto panel 3.
+        panel.add("jpMensEliminado", crearPanelConTabla(colums, jtMensEliminado));
+
+        colums = new String [] {"Para", "Asunto", "Contenido", "Fecha guardada", "Hora guardada"};
+        //Inserto panel 4.
+        panel.add("jpMensGuardado", crearPanelConTabla(colums, jtMensGuardado));
+        
+        return panel;
+    }
     
-    //TODO : Metodo incompleto.
-    private JPanel panelMensRecibidos () {
-        jtMensRecibido = new JTable (new DefaultTableModel(
-                new String [] {"De", "Asunto", "Fecha y hora"},
-                0
-        ));
-        return null;
+    private JPanel crearPanelConTabla (String [] colums, JTable table) {
+        table = new JTable (new DefaultTableModel (colums, 0));
+
+        JPanel panel = new JPanel (new GridLayout(1, 1));
+        panel.add(new JScrollPane (table));
+
+        return panel;
+    }
+    
+    public JPanel getMens () {
+        return jpMensajes;
+    }
+    
+    public JPanel getTipoMens () {
+        return jpTipoMensj;
     }
 }

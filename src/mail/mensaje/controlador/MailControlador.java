@@ -1,5 +1,6 @@
 package mail.mensaje.controlador;
 
+import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -12,7 +13,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import mail.mensaje.vista.MailPrincipalVista;
 
 public class MailControlador implements TreeSelectionListener, ActionListener, ItemListener {
-    private MailPrincipalVista vista;
+    private final MailPrincipalVista vista;
     
     public MailControlador () {
         vista = new MailPrincipalVista(this);
@@ -26,15 +27,19 @@ public class MailControlador implements TreeSelectionListener, ActionListener, I
             
         switch(nodoSeleccionado.getUserObject().toString()) {
             case "Enviados" :
+                cambiarPanelDeMens ("jpMensEnviado");
                 vista.activarVisibilidad(false, true, true, true, false, false);
                 break;
             case "Eliminados" :
+                cambiarPanelDeMens ("jpMensEliminado");
                 vista.activarVisibilidad(false, false, true, false, true, false);
                 break;
             case "Guardados" :
+                cambiarPanelDeMens ("jpMensGuardado");
                 vista.activarVisibilidad(false, false, true, true, false, false);
                 break;
             case "Recibidos" :
+                cambiarPanelDeMens ("jpMensRecibido");
                 vista.activarVisibilidad(false, false, true, false, false, true);
                 break;
         }
@@ -61,6 +66,12 @@ public class MailControlador implements TreeSelectionListener, ActionListener, I
             case "jbIrEmpresas" :
                 new OperacionesDeEmpresaControlador (vista, 1);
                 break;
+            case "jbMensNormal" :
+                cambiarPanelDeTipoMensEnviado("mensajeNormal");
+                break;
+            case "jbMensProg" :
+                cambiarPanelDeTipoMensEnviado ("mensajeProg");
+                break;
         }
     }
 
@@ -75,5 +86,15 @@ public class MailControlador implements TreeSelectionListener, ActionListener, I
                 }
             }
         }
+    }
+    
+    private void cambiarPanelDeMens (String nombrePanel) {
+        CardLayout layout = (CardLayout) vista.getMens().getLayout();
+        layout.show(vista.getMens(), nombrePanel);
+    }
+
+    private void cambiarPanelDeTipoMensEnviado (String nombrePanel) {
+        CardLayout cardLayout = (CardLayout) vista.getTipoMens().getLayout();
+        cardLayout.show(vista.getTipoMens(), nombrePanel);
     }
 }

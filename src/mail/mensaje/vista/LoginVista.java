@@ -108,7 +108,7 @@ public class LoginVista extends JFrame {
         conf.gridy = 5;
         conf.weighty = 0.0;
         conf.gridwidth = 2;
-        conf.insets = new Insets(20, 0, 5, 5);
+        conf.insets = new Insets(20, 0, 5, 20);
 
         add(panelDeBotones(), conf);
     }
