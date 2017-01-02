@@ -17,18 +17,16 @@ import mail.mensaje.controlador.MailControlador;
  */
 public class MailPrincipalVista extends JFrame {
     private JTree jTree;
-    private JTable jtMensRecibido, jtMensProg, jtMensEnviados, jtMensGuardado, jtMensEliminado;
-    private JScrollPane jspMenPane;
-    private JLabel jlConexion, jlCantMensajes;
+    private JToolBar toolBar;
     private JMenuBar menuBar;
     private JMenu jmArchivo, jmMensajes, jmIr, jmHerramientas, jmtema;
+    private JTable jtMensRecibido, jtMensProg, jtMensEnviados, jtMensGuardado, jtMensEliminado;
+    private JLabel jlConexion, jlCantMensajes;
     private Separator sp1, sp2;
-    private JButton jbInicio, jbRedactar, jbIngresarContacto,
-        jbIngresarEmpresa, jbIrContactos, jbEliminarMensaje, jbResponder, 
-        jbResponderTodos, jbReenviarMensaje, jbEditarMensaje, jbRetornarMensaje,
-        jbIrEmpresas;
+    private JButton jbInicio, jbRedactar, jbIngresarContacto,jbIngresarEmpresa, 
+            jbIrContactos, jbEliminarMensaje, jbResponder, jbResponderTodos, 
+            jbReenviarMensaje, jbEditarMensaje, jbRetornarMensaje,jbIrEmpresas;
     private JPanel jpCenter, jpSouth, jpWest, jpTipoMensj, jpMensajes;
-    private JToolBar toolBar;
     private final MailControlador controlador;
     
     public MailPrincipalVista () {
@@ -41,6 +39,7 @@ public class MailPrincipalVista extends JFrame {
     /**
      * Determina cuál de los botones del ToolBar será visible dependiendo de los valores
      * de los argumentos pasados.
+     * 
      * @param act1 Activa u desactiva los botones Ingresar contacto, Ingresar empresa y Consultar contactos.
      * @param act2 Activa u desactiva el botón Reenviar mensaje.
      * @param act3 Activa u desactiva el botón eliminar mensaje.
@@ -66,6 +65,7 @@ public class MailPrincipalVista extends JFrame {
     
     /**
      * Permite acceder a la referencia del objeto de instancia <code>JTree</code>
+     * 
      * @return Devuelve la referencia de un objeto <code>JTree</code>.
      */
     public JTree getTree () {
@@ -121,27 +121,23 @@ public class MailPrincipalVista extends JFrame {
         createNodes (treeNodeMain);
         
         //Inicializo el componente JTree y le agrego los nodos.
-        jTree = new JTree();
-        jTree.setModel(new DefaultTreeModel(treeNodeMain));
+        jTree = new JTree(new DefaultTreeModel(treeNodeMain));
         jTree.setRootVisible(false);
-        jTree.setToggleClickCount(1);
         
         jTree.addTreeSelectionListener(controlador);
         //Le configuro un tamaño por defecto.
         jTree.setPreferredSize(new Dimension(150, 90));
-        
-        jspMenPane = new JScrollPane(jTree);
+        jTree.setBorder(BorderFactory.createEtchedBorder());
         
         //Configuro los componentes del panel jpWest.
         jpWest = new JPanel (new GridBagLayout());
         GridBagConstraints conf = new GridBagConstraints ();
-        conf.gridx = 0;
-        conf.gridy = 0;
+        conf.gridx = conf.gridy = 0;
         conf.weighty = 1.0;
         conf.fill = GridBagConstraints.VERTICAL;
         conf.insets = new Insets (10, 10, 3, 10);
         
-        jpWest.add (jspMenPane, conf);
+        jpWest.add (jTree, conf);
         
         //Configuro los componentes del panel jpCenter.
         jpCenter = new JPanel (new GridBagLayout());
@@ -173,10 +169,6 @@ public class MailPrincipalVista extends JFrame {
         jlConexion.setIcon(UtilImg.createImageIcon("iconos\\disconnect.png"));
         jpSouth.add (jlConexion, conf);
         
-        //Configuro mi Frame.
-        setTitle("Mail");
-        setLayout(new BorderLayout());
-        
         //Añadiendo el menuBar al JFrame.
         setJMenuBar(menuBar);
         
@@ -186,10 +178,11 @@ public class MailPrincipalVista extends JFrame {
         add (BorderLayout.WEST, jpWest);
         add (BorderLayout.CENTER, jpCenter);
         
+        setTitle("Mail");
+        //Maximimo la ventana por defecto.
+        setExtendedState(MAXIMIZED_BOTH);
         //El tamaño minimo en la que puede ser minimizado.
         setMinimumSize(new Dimension(800, 600));
-        //Maximimo la ventana por defecto.
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
     
@@ -198,22 +191,19 @@ public class MailPrincipalVista extends JFrame {
      * @param topNode Contiene la referencia del nodo principal.
      */
     private void createNodes (DefaultMutableTreeNode topNode) {
-        DefaultMutableTreeNode tipoDeMensaje, categoria;
+        DefaultMutableTreeNode categoria;
         
-        categoria = new DefaultMutableTreeNode ("Mensajes");
+        categoria = new DefaultMutableTreeNode("Enviados");
         topNode.add (categoria);
         
-        tipoDeMensaje = new DefaultMutableTreeNode("Enviados");
-        categoria.add (tipoDeMensaje);
+        categoria = new DefaultMutableTreeNode("Recibidos");
+        topNode.add (categoria);
         
-        tipoDeMensaje = new DefaultMutableTreeNode("Recibidos");
-        categoria.add (tipoDeMensaje);
+        categoria = new DefaultMutableTreeNode("Guardados");
+        topNode.add (categoria);
         
-        tipoDeMensaje = new DefaultMutableTreeNode("Guardados");
-        categoria.add (tipoDeMensaje);
-        
-        tipoDeMensaje = new DefaultMutableTreeNode("Eliminados");
-        categoria.add (tipoDeMensaje);
+        categoria = new DefaultMutableTreeNode("Eliminados");
+        topNode.add (categoria);
     }
     
     /**
@@ -305,6 +295,7 @@ public class MailPrincipalVista extends JFrame {
     
     /**
      * Configura un botón con los argumentos pasados.
+     * 
      * @param text Texto que tendra el botón.
      * @param imagePath La ruta en donde se encuentra el icono para el boton.
      * @param actionCommand Comando del botón.
