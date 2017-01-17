@@ -13,9 +13,10 @@ import static mail.mensaje.vista.OperacionesDeEmpresaVista.actualizar_eliminar;
  *
  * @author Félix Pedrozo
  */
-public class OperacionesDeEmpresaControlador extends MouseAdapter implements ActionListener {
+public class OperacionesDeEmpresaControlador extends MouseAdapter implements ActionListener, KeyListener {
     private final OperacionesDeEmpresaVista vista;
     private final EmpresaDAO modelo;
+    private boolean tecleado = false;
     private int indexFila;
     
     public OperacionesDeEmpresaControlador (OperacionesDeEmpresaVista vista) {
@@ -35,24 +36,16 @@ public class OperacionesDeEmpresaControlador extends MouseAdapter implements Act
                 vista.configurarBotones(false, "Guardar");
                 break;
                 
-            case "jbBuscar" :
-                if (vista.estaVacio(2))
-                    vista.mostrarMensaje("El campo de busqueda no debe estar vacío", ERROR_MESSAGE);
-                
-                else {
-                    vista.cargarTablaNuevaInfo(buscarRegistro());
-                }
-                break;
-                
-            case "jbMostrarTodo" :
-                //TODO : Me falta el botón mostrar todo.
-                break;
-                
             default :
                 //Valido los datos.
                 if (vista.estaVacio(1)) {
                      vista.mostrarMensaje("Los campos no deben estar vacíos", ERROR_MESSAGE);
                      return;
+                
+                //Validar si dirección de correo es valido.
+                } else if (!vista.direccDeCorreoValida()) {
+                    vista.mostrarMensaje("Dirección de correo no valida.", ERROR_MESSAGE);
+                    return;
                 
                 //Bloque de codigo para eliminar registro.
                 } else if (command.equals ("jbEliminar")) {
@@ -113,5 +106,34 @@ public class OperacionesDeEmpresaControlador extends MouseAdapter implements Act
         }
         
         return modelo.obtenerEmpresa(where, vista.buscarRegistro());
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+        //No se utiliza.
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        //No se utiliza.
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+        if (Character.isAlphabetic(e.getKeyCode())) {
+             vista.cargarTablaNuevaInfo(buscarRegistro());
+             
+            if (!tecleado) tecleado = true;
+             
+        } else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
+            if (vista.estaVacio(2)) {
+                if (tecleado) {
+                    vista.cargarTablaTodasLasEmpresas();
+                    tecleado = false;
+                }
+                
+            } else
+                vista.cargarTablaNuevaInfo(buscarRegistro());
+        }
     }
 }

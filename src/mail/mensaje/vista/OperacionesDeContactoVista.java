@@ -3,6 +3,8 @@ package mail.mensaje.vista;
 import java.awt.*;
 import javax.swing.*;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.swing.table.DefaultTableModel;
 import mail.mensaje.modelo.dao.ContactoDAO;
 import mail.mensaje.modelo.dao.EmpresaDAO;
@@ -19,7 +21,7 @@ public class OperacionesDeContactoVista extends JDialog {
     private JLabel jlNombre, jlApellido, jlEmail, jlEmpresa, jlFiltrar, jlTotalContactos;
     private JTextField jtfNombre, jtfApellido, jtfEmail, jtfBuscar;
     private JComboBox <Empresa> jcbEmpresa;
-    private JButton jbIngresarEmpresa, jbGuardar, jbCancelar, jbBuscar, jbEliminar;
+    private JButton jbIngresarEmpresa, jbGuardar, jbCancelar, jbEliminar;
     private JRadioButton jrbNombre, jrbApellido, jrbEmail, jrbEmpresa;
     private JTabbedPane jTabbedPane;
     private JTable jtContacto;
@@ -65,7 +67,7 @@ public class OperacionesDeContactoVista extends JDialog {
         setSize(570, 450);
         setLocationRelativeTo(null);
         setLayout(new GridLayout(1, 0));
-        setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         //Inserto los paneles al TabbedPane.
         jTabbedPane = new JTabbedPane();
@@ -151,7 +153,7 @@ public class OperacionesDeContactoVista extends JDialog {
     private JPanel agregarPanelBuscar () {
         //Configuro los componentes del panel jpConsulta.
         JPanel jpBuscar = new JPanel(new GridBagLayout());
-        jpBuscar.setBorder (BorderFactory.createEtchedBorder());
+        jpBuscar.setBorder (BorderFactory.createTitledBorder("Buscar"));
         
         GridBagConstraints constraints = new GridBagConstraints();
 
@@ -164,23 +166,15 @@ public class OperacionesDeContactoVista extends JDialog {
         constraints.insets = new Insets(10, 20, 10, 10);
 
         jtfBuscar = new JTextField(25);
+        jtfBuscar.addKeyListener(controlador);
         jpBuscar.add (jtfBuscar, constraints);
-
-        //Componente de la fila 0 columna 4.
-        constraints.gridx = 4;
-        constraints.gridwidth = 1;
-        constraints.insets = new Insets(10, 0, 10, 10);
-
-        jbBuscar = new JButton("Buscar");
-        jbBuscar.setActionCommand("jbBuscar");
-        jbBuscar.addActionListener(controlador);
-        constraints.fill = GridBagConstraints.NONE;
-        jpBuscar.add (jbBuscar, constraints);
 
         //Componente de la fila 1 columna 0.
         constraints.gridx = 0;
         constraints.gridy = 1;
+        constraints.gridwidth = 1;
         constraints.weightx = 1.0;
+        constraints.fill = GridBagConstraints.NONE;
         constraints.insets = new Insets(0, 20, 10, 20);
 
         jlFiltrar = new JLabel("Filtrar por :");
@@ -312,11 +306,22 @@ public class OperacionesDeContactoVista extends JDialog {
     
     public boolean estaVacio (int indexTab) {
         if (indexTab == 1)
-            return (jtfNombre.getText().trim().isEmpty() || 
-                    jtfApellido.getText().trim().isEmpty() ||
-                    jtfEmail.getText().trim().isEmpty());
+            return (isEmpty(jtfNombre.getText()) || isEmpty(jtfApellido.getText()) ||
+                    isEmpty(jtfEmail.getText()));
         else
-            return jtfBuscar.getText().trim().isEmpty();
+            return isEmpty(jtfBuscar.getText());
+    }
+    
+    public boolean direccDeCorreoValida () {
+         Pattern pattern = Pattern.compile("^[\\w-]+(\\.[\\w-]+)*@[A-Za-z0-9]+"
+                 + "(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
+         Matcher mat = pattern.matcher(jtfEmail.getText());
+        
+        return mat.find();
+    }
+    
+    private boolean isEmpty (String s) {
+        return s.trim().isEmpty();
     }
     
     public void mostrarMensaje (String m, int tipoMensaje) {

@@ -3,6 +3,8 @@ package mail.mensaje.vista;
 import java.awt.*;
 import javax.swing.*;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.swing.table.DefaultTableModel;
 import mail.mensaje.controlador.OperacionesDeEmpresaControlador;
 import mail.mensaje.modelo.dao.EmpresaDAO;
@@ -16,7 +18,7 @@ import mail.mensaje.modelo.vo.Empresa;
 public class OperacionesDeEmpresaVista extends JDialog {
     private JLabel jlEmail, jlEmpresa, jlDireccion, jlFiltrar, jlTotalEmpresa;
     private JTextField jtfEmpresa, jtfDireccion, jtfEmail, jtfBuscar;
-    private JButton jbGuardar, jbCancelar, jbBuscar, jbEliminar;
+    private JButton jbGuardar, jbCancelar, jbEliminar;
     private JRadioButton jrbEmpresa, jrbEmail;
     private JTabbedPane jTabbedPane;
     private JTable jtEmpresa;
@@ -61,7 +63,7 @@ public class OperacionesDeEmpresaVista extends JDialog {
         setLayout(new GridLayout(1, 0));
         setLocationRelativeTo(null);
         setModal(true);
-        setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         jTabbedPane = new JTabbedPane();
         //Inserto los paneles al TabbedPane.
@@ -76,57 +78,48 @@ public class OperacionesDeEmpresaVista extends JDialog {
     
     private JPanel addPanelBuscar () {
         JPanel jpBuscar = new JPanel(new GridBagLayout());
-        jpBuscar.setBorder (BorderFactory.createEtchedBorder());
+        jpBuscar.setBorder (BorderFactory.createTitledBorder("Buscar"));
         
-        GridBagConstraints constraints = new GridBagConstraints();
+        GridBagConstraints conf = new GridBagConstraints();
 
         //Componente de la fila 0 columna 0.
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.gridwidth = 3;
-        constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.anchor = GridBagConstraints.WEST;
-        constraints.insets = new Insets(10, 20, 10, 10);
+        conf.gridx = conf.gridy = 0;
+        conf.gridwidth = 2;
+        conf.fill = GridBagConstraints.HORIZONTAL;
+        conf.anchor = GridBagConstraints.WEST;
+        conf.insets = new Insets(10, 20, 10, 10);
 
         jtfBuscar = new JTextField(25);
-        jpBuscar.add (jtfBuscar, constraints);
-
-        //Componente de la fila 0 columna 4.
-        constraints.gridx = 4;
-        constraints.gridwidth = 1;
-        constraints.insets = new Insets(10, 0, 10, 10);
-
-        jbBuscar = new JButton("Buscar");
-        jbBuscar.setActionCommand("jbBuscar");
-        jbBuscar.addActionListener(controlador);
-        constraints.fill = GridBagConstraints.NONE;
-        jpBuscar.add (jbBuscar, constraints);
+        jtfBuscar.addKeyListener(controlador);
+        jpBuscar.add (jtfBuscar, conf);
 
         //Componente de la fila 1 columna 0.
-        constraints.gridx = 0;
-        constraints.gridy = 1;
-        constraints.weightx = 1.0;
-        constraints.insets = new Insets(0, 20, 10, 20);
+        conf.gridx = 0;
+        conf.gridy = 1;
+        conf.weightx = 1.0;
+        conf.gridwidth = 1;
+        conf.fill = GridBagConstraints.NONE;
+        conf.insets = new Insets(0, 20, 10, 20);
 
         jlFiltrar = new JLabel("Filtrar por :");
-        jpBuscar.add (jlFiltrar, constraints);
+        jpBuscar.add (jlFiltrar, conf);
 
         ButtonGroup buttonGroup = new ButtonGroup();
 
         //Componente de la fila 1 columna 1.
-        constraints.gridx = 1;
-        constraints.insets = new Insets(0, 0, 10, 20);
+        conf.gridx = 1;
+        conf.insets = new Insets(0, 0, 10, 20);
 
         jrbEmpresa = new JRadioButton("Empresa", true);
         buttonGroup.add (jrbEmpresa);
-        jpBuscar.add (jrbEmpresa, constraints);
+        jpBuscar.add (jrbEmpresa, conf);
 
         //Componente de la fila 1 columna 2.
-        constraints.gridx = 2;
+        conf.gridx = 2;
 
         jrbEmail = new JRadioButton("Email");
         buttonGroup.add (jrbEmail);
-        jpBuscar.add (jrbEmail, constraints);
+        jpBuscar.add (jrbEmail, conf);
         
         return jpBuscar;
     }
@@ -297,6 +290,14 @@ public class OperacionesDeEmpresaVista extends JDialog {
         jtfEmpresa.setText(null);
         jtfDireccion.setText(null);
         jtfEmail.setText(null);
+    }
+    
+     public boolean direccDeCorreoValida () {
+         Pattern pattern = Pattern.compile("^[\\w-]+(\\.[\\w-]+)*@[A-Za-z0-9]+"
+                 + "(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
+         Matcher mat = pattern.matcher(jtfEmail.getText());
+        
+        return mat.find();
     }
     
     public void cargarTablaTodasLasEmpresas () {
