@@ -42,7 +42,7 @@ public class Empresa {
     }
     
     public String [] toArray () {
-        return new String [] {nombre, email, direccion};
+        return new String [] {nombre, direccion, email};
     }
     
     @Override

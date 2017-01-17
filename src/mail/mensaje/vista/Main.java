@@ -15,7 +15,7 @@ public class Main {
            
         } catch (Exception ex) {}
         
-        //Crea una instancia de la clase MailControlador.
+        //Crea una instancia de la clase LoginVista.
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {

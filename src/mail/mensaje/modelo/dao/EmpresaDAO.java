@@ -126,8 +126,8 @@ public class EmpresaDAO {
             //Cargo el objeto empresa.
             empresa.setId(rs.getLong(1));
             empresa.setNombre(rs.getString(2));
-            empresa.setEmail(rs.getString(3));
-            empresa.setDireccion(rs.getString(4));
+            empresa.setDireccion(rs.getString(3));
+            empresa.setEmail(rs.getString(4));
             
         } catch (SQLException ex) {
             throw ex;
